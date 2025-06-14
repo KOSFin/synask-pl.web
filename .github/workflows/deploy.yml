@@ -45,7 +45,7 @@ jobs:
           publish_branch: gh-pages
           force_orphan: true # Полностью заменяет старые файлы новыми
 
-      # 7. Проверяем коммит на наличие тега #update_v.x.x.x в заголовке коммита
+      # 7. Проверяем коммит на наличие тега #update_v.x.x.x в заголовке коммита (new)
       - name: Check for version update tag
         id: check_version
         shell: bash
