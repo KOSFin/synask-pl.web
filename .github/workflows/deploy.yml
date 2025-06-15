@@ -52,11 +52,9 @@ jobs:
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
 
-          printf "%s\n" "$COMMIT_MSG" | grep -qE '#update_v\.[0-9]+\.[0-9]+\.[0-9]+'
-
-          if [ $? -eq 0 ]; then
+          if echo "$COMMIT_MSG" | grep -qE '#update_v\.[0-9]+\.[0-9]+\.[0-9]+'; then
             echo "Version tag found in commit message."
-            VERSION=$(printf "%s\n" "$COMMIT_MSG" | grep -oE '#update_v\.[0-9]+\.[0-9]+\.[0-9]+' | sed 's/#update_//')
+            VERSION=$(echo "$COMMIT_MSG" | grep -oE '#update_v\.[0-9]+\.[0-9]+\.[0-9]+' | sed 's/#update_//')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           else
             echo "No version tag found in commit message."
