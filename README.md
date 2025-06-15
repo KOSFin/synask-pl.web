@@ -1,8 +1,8 @@
 # sYnask [Web]
 
 ![GitHub Actions Workflow Status](https://github.com/KOSFin/synask-pl.web/actions/workflows/deploy.yml/badge.svg)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/KOSFin/synask-pl.web)
-![Repo size](https://img.shields.io/github/repo-size/KOSFin/synask-pl.web)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/KOSFin/synask-pl.web?cacheBust=1)
+![Repo size](https://img.shields.io/github/repo-size/KOSFin/synask-pl.web?cacheBust=1)
 
 ---
 
