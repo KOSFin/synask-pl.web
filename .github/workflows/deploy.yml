@@ -34,7 +34,7 @@ jobs:
 
       # 5. Создаем CNAME файл для кастомного домена
       - name: Create CNAME file
-        run: echo "me.synask.ru" > ./dist/CNAME
+        run: echo "me.syprod.ru" > ./dist/CNAME
 
       # 6. Размещаем собранные файлы в ветке gh-pages
       - name: Deploy to GitHub Pages
