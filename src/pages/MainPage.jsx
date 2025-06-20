@@ -116,11 +116,12 @@ const styles = {
         WebkitBackdropFilter: 'blur(20px) saturate(180%)', // для Safari
         backgroundColor: 'rgba(25, 22, 47, 0.94)',
         backdropFilter: 'blur(12px) saturate(150%)',
-        border: '1px solid rgba(187, 0, 255, 0.37)',
+        borderBottom: '1px solid rgba(187, 0, 255, 0.37)',
+        borderTop: '1px solid rgba(187, 0, 255, 0.37)',
         borderRadius: '1.5rem',
         padding: '2rem',
         margin: '0 auto',
-        maxWidth: '1280px',
+        maxWidth: '100vw',
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0,
     },
@@ -1079,9 +1080,8 @@ const IntroSection = () => {
         // Общий контейнер секции
         sectionContainer: {
             position: 'relative',
-            minHeight: sectionHeight,
             alignItems: 'center',
-            padding: '2rem 1rem 0 1rem', // Добавим отступ сверху
+            padding: isMobile ? 0 : '2rem 1rem 0 1rem', // Добавим отступ сверху
         },
         // Заголовок, вынесенный наверх
         mainTitle: {
@@ -1099,10 +1099,10 @@ const IntroSection = () => {
         wrapper: {
             position: 'relative',
             width: '100%',
-            maxWidth: 'calc(100vw - 60px)',
+            maxWidth: isMobile ? 'none' : 'calc(100vw - 60px)',
             margin: '0 auto',
             zIndex: 20,
-            borderRadius: isMobile ? '0 0 2rem 2rem' : '2.5rem',
+            borderRadius: '2rem 2rem 0 0',
             boxShadow: '0 0 80px 40px rgba(249,115,22,0.18), 0 0 120px 60px rgba(168,85,247,0.12)',
             background: 'rgba(25, 22, 47, 0.85)',
             overflow: 'hidden', // Меняем на hidden, чтобы обрезать маскота
@@ -1241,11 +1241,12 @@ const IntroSection = () => {
             WebkitBackdropFilter: 'blur(20px) saturate(180%)',
             backgroundColor: 'rgba(25, 22, 47, 0.94)',
             backdropFilter: 'blur(12px) saturate(150%)',
-            border: '1px solid rgba(187, 0, 255, 0.37)',
+            borderBottom: '1px solid rgba(187, 0, 255, 0.37)',
+            borderTop: '1px solid rgba(187, 0, 255, 0.37)',
             borderRadius: '1.5rem',
             padding: '2rem',
             margin: '0 auto',
-            maxWidth: '1280px',
+            width: '100vw',
             borderTopRightRadius: 0,
             borderTopLeftRadius: 0,
         },
