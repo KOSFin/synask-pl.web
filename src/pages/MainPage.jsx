@@ -2,407 +2,576 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
 
-// --- Стили в виде CSS-in-JS объектов ---
-// Здесь собраны все стили для компонентов страницы.
+// --- Иконки ---
+const ChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"></path></svg>;
+const GithubIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> );
+const TelegramIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7.89 12.56L2 9l20-7Z"/><path d="m22 2-15 12 4 10 4-10-3-7 6-2Z"/></svg> );
+const TwitterIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 1.4 3.3 4.4 3.3 4.4s-1.4 1.4-3.3 1.4c-1.8 0-3.3-1.4-3.3-1.4s-1.4 2.8-4.7 2.8c-2.2 0-4.7-1.4-4.7-1.4s-1.4-1.4-1.4-2.8c0-1.4 1.4-2.8 1.4-2.8s2.1-.7 3.3 0c1.2.7 2.1 2.1 2.1 2.1s.7-2.1 2.8-2.8c2.1-.7 3.3-1.4 3.3-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-1.4-2.8s-2.1.7-2.8 1.4c-.7.7-1.4 2.1-1.4 2.1s-2.1-2.1-2.8-2.8c-.7-.7-2.1-1.4-2.8-1.4c-1.4 0-2.8 1.4-2.8 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1s.7 1.4 2.1 2.1c1.4.7 2.8 1.4 4.7 1.4 2.2 0 4.7-1.4 4.7-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-2.8-2.8s-2.8 1.4-3.3 2.1c-.5.7-1.4 2.1-1.4 2.1s-1.4-2.1-2.8-2.8c-1.4-.7-2.8-1.4-4.7-1.4c-2.2 0-4.7 1.4-4.7 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1Z"/></svg>);
+const SmartphoneIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
+const ComputerIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
+// Новая иконка для логотипа
+const SynaskIcon = () => (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 2.33331C16.928 2.33331 19.5543 3.69343 21.4087 5.91891C23.263 8.14439 24.1667 11.0188 24.0134 13.9167C23.8601 16.8145 22.6611 19.5259 20.6667 21.4937C18.6723 23.4616 15.999 24.5 13.1667 24.5C10.2387 24.5 7.61239 23.14" stroke="url(#paint0_linear_icon)" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M14 25.6667C11.072 25.6667 8.44569 24.3066 6.59133 22.0811C4.73696 19.8556 3.83333 16.9812 3.98664 14.0833C4.13994 11.1855 5.33886 8.47413 7.33333 6.50628C9.3278 4.53844 12.001 3.5 14.8333 3.5C17.7613 3.5 20.3876 4.86012 22.242 7.0856" stroke="url(#paint1_linear_icon)" strokeWidth="3" strokeLinecap="round"/>
+        <defs>
+            <linearGradient id="paint0_linear_icon" x1="13.1667" y1="2.33331" x2="13.1667" y2="24.5" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#F97316"/>
+                <stop offset="1" stopColor="#A855F7"/>
+            </linearGradient>
+            <linearGradient id="paint1_linear_icon" x1="14.8333" y1="3.5" x2="14.8333" y2="25.6667" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#F97316"/>
+                <stop offset="1" stopColor="#C084FC"/>
+            </linearGradient>
+        </defs>
+    </svg>
+);
+
+
+// --- Стили ---
 const styles = {
     appContainer: {
         backgroundColor: '#000',
         color: '#fff',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     },
-    header: {
+    header: { // Базовые стили хедера, остальное управляется анимацией
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         zIndex: 50,
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        transition: 'background-color 0.3s ease, border-color 0.3s ease', // Для плавности
     },
     headerContent: {
-        maxWidth: '1280px',
-        margin: '0 auto',
-        padding: '0 1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: '5rem',
+        maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex',
+        alignItems: 'center', justifyContent: 'space-between', height: '5rem',
     },
     logo: {
-        flexShrink: 0,
-        fontWeight: 'bold',
-        fontSize: '1.875rem',
-        letterSpacing: '0.05em',
+        flexShrink: 0, fontWeight: 'bold', fontSize: '1.875rem', letterSpacing: '0.05em',
+        display: 'flex', alignItems: 'center', gap: '0.75rem', // Flex для иконки и текста
     },
-    nav: {
-        alignItems: 'center',
-        gap: '1rem',
-    },
+    nav: { alignItems: 'center', gap: '1rem' },
     navLink: {
-        color: '#D1D5DB',
-        transition: 'color 0.2s',
-        padding: '0.5rem 0.75rem',
-        borderRadius: '0.375rem',
-        textDecoration: 'none',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.25rem',
+        color: '#D1D5DB', transition: 'color 0.2s', padding: '0.5rem 0.75rem', borderRadius: '0.375rem',
+        textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: '0.25rem',
     },
     navButton: {
-        background: 'linear-gradient(to right, #F97316, #A855F7)',
-        color: 'white',
-        fontWeight: 'bold',
-        padding: '0.5rem 1.25rem',
-        borderRadius: '0.5rem',
-        transition: 'all 0.3s',
-        border: 'none',
-        cursor: 'pointer',
-        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
+        background: 'linear-gradient(to right, #F97316, #A855F7)', color: 'white', fontWeight: 'bold',
+        padding: '0.5rem 1.25rem', borderRadius: '0.5rem', transition: 'all 0.3s',
+        border: 'none', cursor: 'pointer', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
     },
     heroSection: {
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '1rem',
-        position: 'relative', // Для z-index
+        height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', textAlign: 'center', padding: '1rem',
+        position: 'sticky', // Делаем секцию "липкой"
+        top: 0,
         zIndex: 10,
+    },
+    heroContentWrapper: { // Обертка для элементов, которые будут анимироваться
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
     },
     badgesContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '0.75rem',
-        marginBottom: '2rem',
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem',
     },
     badge: {
-        fontSize: '0.75rem',
-        fontWeight: 600,
-        padding: '0.25rem 0.75rem',
-        borderRadius: '9999px',
+        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.75rem', borderRadius: '9999px',
     },
     heroTitle: {
-        fontSize: '3.75rem',
-        fontWeight: 800,
-        marginBottom: '1rem',
-        background: 'linear-gradient(to right, #FB923C, #C084FC)',
-        WebkitBackgroundClip: 'text',
+        fontSize: 'clamp(2.5rem, 5vw + 1rem, 3.75rem)', fontWeight: 800, marginBottom: '1rem',
+        background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
     },
+    sectionTitle: { // Общий стиль для заголовков секций
+        fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, marginBottom: '1rem',
+        background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent', textAlign: 'center',
+    },
+    sectionSubtitle: { // Общий стиль для подзаголовков
+        marginBottom: '3rem', fontSize: '1.125rem', color: '#9CA3AF',
+        maxWidth: '48rem', textAlign: 'center', margin: '0 auto 3rem auto',
+    },
     heroSubtitle: {
-        marginBottom: '2rem',
-        fontSize: '1.125rem',
-        color: '#9CA3AF',
-        maxWidth: '42rem',
+        marginBottom: '2rem', fontSize: '1.125rem', color: '#9CA3AF', maxWidth: '42rem',
     },
-    emailForm: {
-        width: '100%',
-        maxWidth: '28rem',
-    },
+    emailForm: { width: '100%', maxWidth: '28rem' },
     emailInputContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: 'rgba(17, 24, 39, 0.5)',
-        border: '1px solid rgba(168, 85, 247, 0.5)',
-        borderRadius: '0.5rem',
-        padding: '0.5rem',
-        backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', backgroundColor: 'rgba(17, 24, 39, 0.5)',
+        border: '1px solid rgba(168, 85, 247, 0.5)', borderRadius: '0.5rem',
+        padding: '0.5rem', backdropFilter: 'blur(4px)',
     },
     emailInput: {
-        appearance: 'none',
-        backgroundColor: 'transparent',
-        border: 'none',
-        width: '100%',
-        color: 'white',
-        marginRight: '0.75rem',
-        padding: '0.5rem',
+        appearance: 'none', backgroundColor: 'transparent', border: 'none',
+        width: '100%', color: 'white', marginRight: '0.75rem', padding: '0.5rem',
         lineHeight: '1.5',
     },
-    // --- ИЗМЕНЕННЫЕ СТИЛИ СЕКЦИИ С ТЕЛЕФОНОМ ---
-    contentWrapper: {
+    pageContent: { // Новый стиль для контента, который "наезжает"
+        position: 'relative',
+        zIndex: 30, // Выше чем heroSection, но ниже хедера
+    },
+    glassPane: {
         position: 'relative',
         zIndex: 10,
-        backgroundColor: '#000', // Чтобы контент не был прозрачным
-        paddingTop: '5vh', // Отступ сверху, чтобы не налезать на hero
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)', // для Safari
+        backgroundColor: 'rgba(17, 24, 39, 0.45)',
+        backdropFilter: 'blur(12px) saturate(150%)',
+        border: '1px solid rgba(187, 0, 255, 0.37)',
+        borderRadius: '1.5rem',
+        padding: '2rem',
+        margin: '0 auto',
+        maxWidth: '1280px',
     },
     phoneSectionContainer: {
-        position: 'relative',
-        height: '220vh', // Оптимальная высота для 4 постов
-        width: '100%',
+        position: 'relative', height: '220vh', width: '100%',
     },
     phoneStickyContainer: {
-        position: 'sticky',
-        top: '15%',
-        height: '85vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        position: 'sticky', top: '13%', marginTop: '20px', height: '85vh', display: 'flex',
+        justifyContent: 'center', alignItems: 'center',
     },
     phoneBody: {
-        position: 'relative',
-        width: 'clamp(300px, 22vw, 400px)',
-        height: '100%',
-        backgroundColor: '#000',
-        border: '10px solid #27272a',
-        borderRadius: '3rem',
-        boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.4)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
+        position: 'relative', width: 'clamp(300px, 22vw, 400px)', height: '100%',
+        backgroundColor: '#000', border: '10px solid #27272a',
+        borderRadius: '3rem', boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.4)',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
     },
     phoneNotch: {
-        position: 'absolute',
-        top: '0px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '35%',
-        height: '1.75rem',
-        backgroundColor: '#27272a',
-        borderRadius: '0 0 1rem 1rem',
-        zIndex: 20,
+        position: 'absolute', top: '0px', left: '50%', transform: 'translateX(-50%)',
+        width: '35%', height: '1.75rem', backgroundColor: '#27272a',
+        borderRadius: '0 0 1rem 1rem', zIndex: 20,
     },
-    phoneFeed: {
-        position: 'relative',
-        width: '100%',
-    },
-    // --- Стили постов (без изменений) ---
+    phoneFeed: { position: 'relative', width: '100%' },
     postCard: {
-        width: '100%',
-        borderRadius: '1rem',
-        backgroundColor: '#111827',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        marginBottom: '1rem',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        width: '100%', borderRadius: '1rem', backgroundColor: '#111827',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        marginBottom: '1rem', border: '1px solid rgba(255, 255, 255, 0.05)',
     },
-    postHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.75rem',
-        gap: '0.75rem',
-    },
-    postAvatar: {
-        width: '40px',
-        height: '40px',
-        borderRadius: '50%',
-        backgroundColor: '#374151',
-        backgroundSize: 'cover',
-    },
-    postUsername: {
-        fontWeight: '600',
-        color: 'white',
-    },
-    postImage: {
-        aspectRatio: '1 / 1',
-        width: '100%',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundColor: '#374151',
-    },
-    postContent: {
-        padding: '0.5rem 1rem 1rem 1rem',
-    },
-    postActions: {
-        display: 'flex',
-        gap: '1rem',
-        marginBottom: '0.5rem',
-    },
-    postActionIcon: {
-        cursor: 'pointer',
-        transition: 'transform 0.2s ease',
-        fontSize: '1.5rem',
-    },
-    postLikes: {
-        fontWeight: '600',
-        fontSize: '0.875rem',
-        color: 'white',
-        marginBottom: '0.5rem',
-    },
-    postDescription: {
-        fontSize: '0.875rem',
-        color: '#D1D5DB',
-        lineHeight: 1.5,
-    },
-    // --- Остальные стили ---
+    postHeader: { display: 'flex', alignItems: 'center', padding: '0.75rem', gap: '0.75rem' },
+    postAvatar: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#374151', backgroundSize: 'cover' },
+    postUsername: { fontWeight: '600', color: 'white' },
+    postImage: { aspectRatio: '1 / 1', width: '100%', backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#374151' },
+    postContent: { padding: '0.5rem 1rem 1rem 1rem' },
+    postActions: { display: 'flex', gap: '1rem', marginBottom: '0.5rem' },
+    postActionIcon: { cursor: 'pointer', transition: 'transform 0.2s ease', fontSize: '1.5rem' },
+    postLikes: { fontWeight: '600', fontSize: '0.875rem', color: 'white', marginBottom: '0.5rem' },
+    postDescription: { fontSize: '0.875rem', color: '#D1D5DB', lineHeight: 1.5 },
     aiStorySection: {
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        zIndex: 10,
-    },
-    footer: {
-        backgroundColor: 'rgba(17, 24, 39, 0.5)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        color: '#9CA3AF',
-        padding: '3rem 1rem',
-        position: 'relative',
-        zIndex: 30,
-    },
-    footerGrid: {
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'grid',
-        gap: '2rem',
-    },
-    footerColumn: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.5rem'
-    },
-    footerLink: {
-        color: 'inherit',
-        textDecoration: 'none',
-        transition: 'color 0.2s',
-    },
-    footerBottom: {
-        maxWidth: '1280px',
-        margin: '2rem auto 0',
-        paddingTop: '2rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.875rem',
-    },
-
-    // --- НОВЫЕ СТИЛИ ДЛЯ СЕКЦИИ С AI-ЧАТОМ ---
-    aiStorySection: {
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        zIndex: 10,
-        padding: '4rem 1rem',
-        textAlign: 'center',
+        minHeight: '100vh', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', position: 'relative',
+        padding: '4rem 1rem', textAlign: 'center',
     },
     aiChatContainer: {
-        maxWidth: '48rem',
-        backgroundColor: 'rgba(17, 24, 39, 0.5)',
-        border: '1px solid rgba(168, 85, 247, 0.5)',
-        borderRadius: '1rem',
-        padding: '1.5rem',
-        backdropFilter: 'blur(10px)',
-        minHeight: '300px',
+        maxWidth: '48rem', backgroundColor: 'rgba(17, 24, 39, 0.5)',
+        border: '1px solid rgba(168, 85, 247, 0.5)', borderRadius: '1rem',
+        padding: '1.5rem', backdropFilter: 'blur(10px)', minHeight: '300px',
+        display: 'flex', flexDirection: 'column', gap: '1rem',
+    },
+    messageBubble: { padding: '0.75rem 1rem', borderRadius: '1rem', maxWidth: '75%', lineHeight: 1.5, fontSize: '1rem' },
+    userMessage: { backgroundColor: '#A855F7', color: 'white', alignSelf: 'flex-end', borderBottomRightRadius: '0.25rem' },
+    aiMessage: { backgroundColor: '#374151', color: 'white', alignSelf: 'flex-start', borderBottomLeftRadius: '0.25rem' },
+    typingIndicatorContainer: { display: 'flex', alignItems: 'center', gap: '0.5rem', alignSelf: 'flex-start' },
+    typingDot: { width: '8px', height: '8px', backgroundColor: '#9CA3AF', borderRadius: '50%' },
+    footer: {
+        backgroundColor: 'rgba(17, 24, 39, 0.5)', borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        color: '#9CA3AF', padding: '3rem 1rem', position: 'relative', zIndex: 30,
+    },
+    footerGrid: { maxWidth: '1280px', margin: '0 auto', display: 'grid', gap: '2rem' },
+    footerColumn: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+    footerLink: { color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' },
+    footerBottom: {
+        maxWidth: '1280px', margin: '2rem auto 0', paddingTop: '2rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex',
+        justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem',
+    },
+    installationSection: {
+        padding: '4rem 1rem',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1rem',
+        alignItems: 'center',
     },
-    messageBubble: {
-        padding: '0.75rem 1rem',
-        borderRadius: '1rem',
-        maxWidth: '75%',
-        lineHeight: 1.5,
+    installationLayout: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 2fr',
+        gap: '3rem',
+        width: '100%',
+        maxWidth: '64rem',
+        alignItems: 'flex-start',
+    },
+    installationControls: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.5rem',
+    },
+    controlGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.75rem',
+    },
+    controlLabel: {
+        fontWeight: 600,
+        color: '#D1D5DB',
         fontSize: '1rem',
     },
-    userMessage: {
-        backgroundColor: '#A855F7',
-        color: 'white',
-        alignSelf: 'flex-end',
-        borderBottomRightRadius: '0.25rem',
+    controlButtons: {
+        display: 'flex',
+        gap: '0.5rem',
+        flexWrap: 'wrap',
     },
-    aiMessage: {
-        backgroundColor: '#374151',
-        color: 'white',
-        alignSelf: 'flex-start',
-        borderBottomLeftRadius: '0.25rem',
-    },
-    typingIndicatorContainer: {
+    controlButton: {
+        padding: '0.5rem 1rem',
+        borderRadius: '0.5rem',
+        border: '1px solid #374151',
+        backgroundColor: 'transparent',
+        color: '#9CA3AF',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
         display: 'flex',
         alignItems: 'center',
         gap: '0.5rem',
+    },
+    activeControlButton: { // Стиль для активной кнопки
+        backgroundColor: '#A855F7',
+        color: 'white',
+        borderColor: '#A855F7',
+    },
+    instructionBox: {
+        backgroundColor: 'rgba(17, 24, 39, 0.7)',
+        borderRadius: '1rem',
+        padding: '1.5rem',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+    },
+    instructionList: {
+        listStylePosition: 'inside',
+        paddingLeft: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        color: '#D1D5DB',
+        lineHeight: 1.6,
+    },
+    newsSection: {
+        padding: '4rem 0',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
+        overflow: 'hidden',
+    },
+    newsSliderContainer: {
+        display: 'flex',
+        width: '100%',
+        cursor: 'grab',
+    },
+    newsCard: {
+        flex: '0 0 clamp(280px, 80vw, 350px)',
+        margin: '0 1rem',
+        backgroundColor: '#111827',
+        borderRadius: '1rem',
+        overflow: 'hidden',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    newsImage: {
+        aspectRatio: '16 / 9',
+        width: '100%',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+    },
+    newsContent: {
+        padding: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
+    newsDate: {
+        color: '#9CA3AF',
+        fontSize: '0.75rem',
+        marginBottom: '0.5rem',
+    },
+    newsTitle: {
+        color: 'white',
+        fontWeight: 600,
+        fontSize: '1.125rem',
+        marginBottom: 'auto',
+    },
+    newsReadMore: {
+        marginTop: '1rem',
+        color: '#C084FC',
+        textDecoration: 'none',
+        fontWeight: 600,
         alignSelf: 'flex-start',
     },
-    typingDot: {
-        width: '8px',
-        height: '8px',
-        backgroundColor: '#9CA3AF',
-        borderRadius: '50%',
+    featuresSection: {
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
+    },
+    featuresDescription: { display: 'flex', flexDirection: 'column', gap: '1.5rem' },
+    accordionItem: {
+        border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '0.75rem',
+        backgroundColor: 'rgba(0,0,0,0.2)',
+    },
+    accordionHeader: {
+        padding: '1rem 1.5rem', cursor: 'pointer', display: 'flex',
+        justifyContent: 'space-between', alignItems: 'center',
+        fontWeight: 600, fontSize: '1.125rem', color: 'white',
+    },
+    accordionContent: { overflow: 'hidden' },
+    accordionText: {
+        padding: '0 1.5rem 1.5rem 1.5rem', color: '#D1D5DB', lineHeight: 1.6
     },
 };
-
-// --- Иконки (без изменений) ---
-const ChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"></path></svg>;
-const GithubIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> );
-const TelegramIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7.89 12.56L2 9l20-7Z"/><path d="m22 2-15 12 4 10 4-10-3-7 6-2Z"/></svg> );
-const TwitterIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 1.4 3.3 4.4 3.3 4.4s-1.4 1.4-3.3 1.4c-1.8 0-3.3-1.4-3.3-1.4s-1.4 2.8-4.7 2.8c-2.2 0-4.7-1.4-4.7-1.4s-1.4-1.4-1.4-2.8c0-1.4 1.4-2.8 1.4-2.8s2.1-.7 3.3 0c1.2.7 2.1 2.1 2.1 2.1s.7-2.1 2.8-2.8c2.1-.7 3.3-1.4 3.3-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-1.4-2.8s-2.1.7-2.8 1.4c-.7.7-1.4 2.1-1.4 2.1s-2.1-2.1-2.8-2.8c-.7-.7-2.1-1.4-2.8-1.4c-1.4 0-2.8 1.4-2.8 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1s.7 1.4 2.1 2.1c1.4.7 2.8 1.4 4.7 1.4 2.2 0 4.7-1.4 4.7-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-2.8-2.8s-2.8 1.4-3.3 2.1c-.5.7-1.4 2.1-1.4 2.1s-1.4-2.1-2.8-2.8c-1.4-.7-2.8-1.4-4.7-1.4c-2.2 0-4.7 1.4-4.7 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1Z"/></svg>);
 
 // --- КОМПОНЕНТЫ ---
 
 const ParticlesBackground = React.memo(() => {
-    // Код этого компонента остается без изменений
     const mountRef = useRef(null);
+    const mousePos = useRef({ x: 0, y: 0 });
+
     useEffect(() => {
         const currentMount = mountRef.current;
         if (!currentMount) return;
+
+        // --- Scene Setup ---
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-        camera.position.z = 50;
+        const camera = new THREE.PerspectiveCamera(60, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1500);
+        camera.position.z = 1;
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         currentMount.appendChild(renderer.domElement);
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 5000;
-        const positions = [];
-        for (let i = 0; i < particlesCount; i++) {
-            const phi = Math.acos(-1 + (2 * i) / particlesCount);
-            const theta = Math.sqrt(particlesCount * Math.PI) * phi;
-            const x = 100 * Math.cos(theta) * Math.sin(phi);
-            const y = 100 * Math.sin(theta) * Math.sin(phi);
-            const z = 100 * Math.cos(phi);
-            positions.push(x, y, z);
+
+        // --- Star Shader ---
+        const createStarTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(0.5, 'rgba(200,200,255,0.4)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 64, 64);
+            return new THREE.CanvasTexture(canvas);
+        };
+        
+        const starTexture = createStarTexture();
+
+        const starShaderMaterial = new THREE.ShaderMaterial({
+            uniforms: { pointTexture: { value: starTexture } },
+            vertexShader: `
+                attribute float size;
+                attribute vec3 color;
+                varying vec3 vColor;
+                void main() {
+                    vColor = color;
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    gl_PointSize = size * (300.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D pointTexture;
+                varying vec3 vColor;
+                void main() {
+                    gl_FragColor = vec4(vColor, 1.0) * texture2D(pointTexture, gl_PointCoord);
+                }
+            `,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true,
+        });
+
+        // --- Create Star Layers ---
+        const createStars = (count, radiusMin, radiusMax, sizeMin, sizeMax) => {
+            const vertices = [], sizes = [], colors = [];
+            const color1 = new THREE.Color("#ff8c00"), color2 = new THREE.Color("#c084fc");
+            for (let i = 0; i < count; i++) {
+                const vec = new THREE.Vector3().setFromSphericalCoords(
+                    THREE.MathUtils.randFloat(radiusMin, radiusMax),
+                    Math.acos(2 * Math.random() - 1),
+                    Math.random() * 2 * Math.PI
+                );
+                vertices.push(vec.x, vec.y, vec.z);
+                sizes.push(THREE.MathUtils.randFloat(sizeMin, sizeMax));
+                const randomColor = Math.random() < 0.5 ? color1 : color2;
+                const finalColor = randomColor.clone().multiplyScalar(THREE.MathUtils.randFloat(0.7, 1.3));
+                colors.push(finalColor.r, finalColor.g, finalColor.b);
+            }
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            return new THREE.Points(geometry, starShaderMaterial);
+        };
+        
+        // --- Create Constellations ---
+        const createConstellationGroup = () => {
+            const group = new THREE.Group();
+            const baseConstellations = [
+                [[0,10,0],[15,12,-10],[25,18,-20],[30,15,-30],[45,18,-40],[55,15,-50],[60,5,-60]],
+                [[-40,-10,0],[-35,0,-10],[-30,10,-20],[-50,0,-15],[-20,0,-5],[-55,-20,-25],[-15,-20,-30]],
+                [[20,-40,0],[30,-30,-10],[25,-20,-20],[15,-25,-30],[10,-35,-40]]
+            ];
+            const constColor = new THREE.Color("#FB923C");
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.25 });
+            const allPointsVertices = [], allPointsSizes = [], allPointsColors = [];
+
+            for (let i = 0; i < 20; i++) {
+                const pattern = baseConstellations[i % baseConstellations.length];
+                const points = pattern.map(p => new THREE.Vector3(...p));
+                const subGroup = new THREE.Group();
+                subGroup.position.setFromSphericalCoords(
+                    THREE.MathUtils.randFloat(200, 350), Math.acos(2*Math.random()-1), Math.random()*2*Math.PI
+                );
+                subGroup.quaternion.random();
+                subGroup.updateMatrix();
+                const transformedPoints = points.map(p => p.clone().applyMatrix4(subGroup.matrix));
+                transformedPoints.forEach(p => {
+                    allPointsVertices.push(p.x, p.y, p.z);
+                    allPointsSizes.push(THREE.MathUtils.randFloat(6, 11));
+                    allPointsColors.push(constColor.r, constColor.g, constColor.b);
+                });
+                const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(transformedPoints), lineMaterial);
+                group.add(line);
+            }
+            const pointsGeometry = new THREE.BufferGeometry();
+            pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(allPointsVertices, 3));
+            pointsGeometry.setAttribute('size', new THREE.Float32BufferAttribute(allPointsSizes, 1));
+            pointsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(allPointsColors, 3));
+            group.add(new THREE.Points(pointsGeometry, starShaderMaterial));
+            return group;
+        };
+        
+        const foregroundStars = createStars(200, 20, 80, 4, 8);
+        scene.add(foregroundStars);
+
+        const starField = createStars(20000, 100, 600, 1, 5);
+        scene.add(starField);
+
+        const constellationGroup = createConstellationGroup();
+        scene.add(constellationGroup);
+        
+        // --- Create Comets ---
+        const comets = [];
+        const cometGeometry = new THREE.BufferGeometry();
+        cometGeometry.setAttribute('position', new THREE.Float32BufferAttribute([0,0,0], 3));
+        const cometMaterial = new THREE.PointsMaterial({
+            color: 0xffffff, size: 15, map: starTexture,
+            blending: THREE.AdditiveBlending, transparent: true, depthTest: false
+        });
+
+        for (let i = 0; i < 10; i++) {
+            const cometMesh = new THREE.Points(cometGeometry, cometMaterial);
+            const resetComet = () => {
+                const phi = Math.acos(2 * Math.random() - 1);
+                const theta = Math.random() * 2 * Math.PI;
+                cometMesh.position.setFromSphericalCoords(1000, phi, theta);
+                const target = new THREE.Vector3(
+                    THREE.MathUtils.randFloat(-200, 200),
+                    THREE.MathUtils.randFloat(-200, 200),
+                    THREE.MathUtils.randFloat(-200, 200)
+                );
+                cometMesh.velocity = new THREE.Vector3().subVectors(target, cometMesh.position).normalize().multiplyScalar(THREE.MathUtils.randFloat(3, 5));
+            };
+            resetComet();
+            comets.push({ mesh: cometMesh, reset: resetComet });
+            scene.add(cometMesh);
         }
-        particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        const particlesMaterial = new THREE.PointsMaterial({ size: 0.5, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true });
-        const colors = [];
-        const color1 = new THREE.Color("#ff8c00");
-        const color2 = new THREE.Color("#9400d3");
-        const vertices = particlesGeometry.attributes.position.array;
-        for (let i = 0; i < vertices.length; i += 3) {
-             const t = (vertices[i+1] / 100 + 1) / 2;
-             const mixedColor = color1.clone().lerp(color2, t);
-             colors.push(mixedColor.r, mixedColor.g, mixedColor.b);
-        }
-        particlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-        const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particleSystem);
+
+        // --- Event Listeners & Animation ---
+        const onMouseMove = e => {
+            mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        };
+        window.addEventListener('mousemove', onMouseMove);
+
         const clock = new THREE.Clock();
         const animate = () => {
             requestAnimationFrame(animate);
-            particleSystem.rotation.y = clock.getElapsedTime() * 0.05;
-            particleSystem.rotation.x = clock.getElapsedTime() * 0.02;
+            const elapsedTime = clock.getElapsedTime();
+
+            // Update comets
+            comets.forEach(comet => {
+                comet.mesh.position.add(comet.mesh.velocity);
+                if (comet.mesh.position.length() > 1100) {
+                    comet.reset();
+                }
+            });
+
+            // Automatic rotation
+            starField.rotation.y = elapsedTime * 0.01;
+            constellationGroup.rotation.y = elapsedTime * 0.015;
+            foregroundStars.rotation.y = elapsedTime * 0.02;
+
+            // Parallax rotation
+            const parallaxStrength = 0.05;
+            const targetRotX = mousePos.current.y * parallaxStrength;
+            const targetRotY = mousePos.current.x * parallaxStrength;
+
+            // Apply parallax with different intensity for each layer
+            foregroundStars.rotation.x += (targetRotX * 2 - foregroundStars.rotation.x) * 0.02;
+            foregroundStars.rotation.y += (targetRotY * 2 - foregroundStars.rotation.y) * 0.02;
+            constellationGroup.rotation.x += (targetRotX - constellationGroup.rotation.x) * 0.02;
+            constellationGroup.rotation.y += (targetRotY - constellationGroup.rotation.y) * 0.02;
+            starField.rotation.x += (targetRotX * 0.5 - starField.rotation.x) * 0.02;
+            starField.rotation.y += (targetRotY * 0.5 - starField.rotation.y) * 0.02;
+            
             renderer.render(scene, camera);
         };
         animate();
+
+        // --- Resize & Cleanup ---
         const onResize = () => {
-            camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+            if (currentMount) {
+                camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+            }
         };
         window.addEventListener('resize', onResize);
+
         return () => {
             window.removeEventListener('resize', onResize);
-            if (currentMount && renderer.domElement) { currentMount.removeChild(renderer.domElement); }
+            window.removeEventListener('mousemove', onMouseMove);
+            
+            // Dispose all geometries and materials to prevent memory leaks
+            scene.traverse(object => {
+                if (object.geometry) {
+                    object.geometry.dispose();
+                }
+                if (object.material) {
+                    if (Array.isArray(object.material)) {
+                        object.material.forEach(material => material.dispose());
+                    } else {
+                        object.material.dispose();
+                    }
+                }
+            });
+
+            starTexture.dispose();
+            
+            if (currentMount && renderer.domElement) {
+                currentMount.removeChild(renderer.domElement);
+            }
+            renderer.dispose();
         };
     }, []);
-    return <div ref={mountRef} style={{position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1}} />;
+
+    return <div ref={mountRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh', zIndex: 1 }} />;
 });
 
+
 const Header = React.memo(() => {
-    // Код этого компонента остается без изменений
     const [isOpen, setIsOpen] = useState(false);
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
+    const [scrolled, setScrolled] = useState(false);
+
+    // Отслеживаем прокрутку для изменения стиля хедера
+    const { scrollY } = useScroll();
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setScrolled(latest > 50);
+    });
 
     useEffect(() => {
         const handleResize = () => setIsDesktop(window.innerWidth > 768);
@@ -410,24 +579,45 @@ const Header = React.memo(() => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const headerVariants = {
+        top: {
+            backgroundColor: 'rgba(17, 24, 39, 0)',
+            backdropFilter: 'blur(0px) saturate(100%)',
+            borderColor: 'rgba(187, 0, 255, 0)',
+        },
+        scrolled: {
+            backgroundColor: 'rgba(17, 24, 39, 0.45)',
+            backdropFilter: 'blur(15px) saturate(150%)',
+            borderColor: 'rgba(187, 0, 255, 0.37)',
+        }
+    };
+
     return (
-        <header style={styles.header}>
+        <motion.header
+            style={{...styles.header, borderBottom: '1px solid'}}
+            variants={headerVariants}
+            animate={scrolled ? "scrolled" : "top"}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
             <div style={styles.headerContent}>
-                <div style={styles.logo}>sYnask</div>
+                <div style={styles.logo}>
+                    <SynaskIcon />
+                    <span>sYnask</span>
+                </div>
                 {isDesktop && (
                     <nav style={{ ...styles.nav, display: 'flex' }}>
-                        <div onMouseLeave={() => setIsOpen(false)} style={{position: 'relative'}}>
+                        <div onMouseLeave={() => setIsOpen(false)} style={{ position: 'relative' }}>
                             <button onMouseEnter={() => setIsOpen(true)} style={styles.navLink}>О нас <ChevronDown /></button>
                             <AnimatePresence>
-                            {isOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                                    style={{position: 'absolute', top: '100%', marginTop: '0.5rem', width: '12rem', backgroundColor: 'rgba(17, 24, 39, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '0.5rem'}}
-                                >
-                                    <a href="#" style={styles.navLink}>Наша Команда</a>
-                                    <a href="#" style={styles.navLink}>Карьера</a>
-                                </motion.div>
-                            )}
+                                {isOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                                        style={{ position: 'absolute', top: '100%', marginTop: '0.5rem', width: '12rem', backgroundColor: 'rgba(17, 24, 39, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '0.5rem' }}
+                                    >
+                                        <a href="#" style={{...styles.navLink, width: '100%'}}>Наша Команда</a>
+                                        <a href="#" style={{...styles.navLink, width: '100%'}}>Карьера</a>
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                         </div>
                         <a href="#" style={styles.navLink}>Фичи</a>
@@ -435,24 +625,24 @@ const Header = React.memo(() => {
                 )}
                 <button style={styles.navButton}>Начать</button>
             </div>
-        </header>
+        </motion.header>
     );
 });
 
 const PhoneFeedSection = () => {
     const targetRef = useRef(null);
     const { scrollYProgress } = useScroll({
-      target: targetRef,
-      offset: ["start start", "end end"],
+        target: targetRef,
+        offset: ["start start", "end end"],
     });
- 
+
     const posts = useMemo(() => [
         { id: 1, username: 'neural_artist', avatar: 'https://placehold.co/40x40/A855F7/FFFFFF?text=NA', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop', likes: 256, description: 'Сгенерировал новый арт с помощью нашего AI. Как вам?', },
         { id: 2, username: 'travel_lover', avatar: 'https://placehold.co/40x40/F97316/FFFFFF?text=TL', image: 'https://images.unsplash.com/photo-1509343256512-d77a5cb3791b?q=80&w=2070&auto=format&fit=crop', likes: 482, description: 'Настроил ленту только на позитивные эмоции. Мир прекрасен!', },
         { id: 3, username: 'sec_guru', avatar: 'https://placehold.co/40x40/3B82F6/FFFFFF?text=SG', image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=2070&auto=format&fit=crop', likes: 1024, description: 'Безопасность превыше всего. Рад, что здесь используется сквозное шифрование.', },
         { id: 4, username: 'code_wizard', avatar: 'https://placehold.co/40x40/10B981/FFFFFF?text=CW', image: 'https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=2070&auto=format&fit=crop', likes: 512, description: 'Делюсь своим сетапом для работы. Минимализм и продуктивность.', },
     ], []);
- 
+
     const feedY = useTransform(scrollYProgress, [0, 1], ['2%', '-72%']);
 
     const Post = ({ post }) => {
@@ -474,7 +664,7 @@ const PhoneFeedSection = () => {
                     </div>
                     <div style={styles.postLikes}>{liked ? post.likes + 1 : post.likes} отметок "Нравится"</div>
                     <p style={styles.postDescription}>
-                        <strong style={{color: 'white'}}>{post.username}</strong> {post.description}
+                        <strong style={{ color: 'white' }}>{post.username}</strong> {post.description}
                     </p>
                 </div>
             </div>
@@ -486,7 +676,7 @@ const PhoneFeedSection = () => {
             <div style={styles.phoneStickyContainer}>
                 <div style={styles.phoneBody}>
                     <div style={styles.phoneNotch}></div>
-                    <motion.div style={{...styles.phoneFeed, y: feedY}}>
+                    <motion.div style={{ ...styles.phoneFeed, y: feedY }}>
                         {posts.map((post) => <Post key={post.id} post={post} />)}
                     </motion.div>
                 </div>
@@ -494,7 +684,7 @@ const PhoneFeedSection = () => {
         </section>
     );
 };
-   
+
 const AiStorySection = React.memo(() => {
     const [messages, setMessages] = React.useState([]);
 
@@ -507,55 +697,39 @@ const AiStorySection = React.memo(() => {
                 { type: 'ai', text: 'Я — sYnask AI, нейросеть, обученная на огромных массивах данных из сети. Я знаю практически все и могу помочь вам найти любую информацию, сгенерировать контент или просто пообщаться. Спрашивайте!' }
             ])
         ];
-        
-        // Запускаем сценарий чата с задержками
+
         const timer1 = setTimeout(chatFlow[0], 500);
         const timer2 = setTimeout(chatFlow[1], 1800);
         const timer3 = setTimeout(chatFlow[2], 4000);
 
-        return () => {
-          clearTimeout(timer1);
-          clearTimeout(timer2);
-          clearTimeout(timer3);
-        }
+        return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); }
     }, []);
 
     const TypingIndicator = () => (
-        <motion.div
-            style={styles.typingIndicatorContainer}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-        >
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0 }}/>
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}/>
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}/>
+        <motion.div style={styles.typingIndicatorContainer} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0 }} />
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }} />
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} />
         </motion.div>
     );
 
     return (
         <section style={styles.aiStorySection}>
-            <motion.h2 style={styles.heroTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+            <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
                 Наш AI всегда на связи
             </motion.h2>
-            <motion.p style={{...styles.heroSubtitle, marginBottom: '3rem'}} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
+            <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
                 Он — ядро платформы, которое обучается вместе с вами, возрождая актуальность и предлагая то, что нужно именно вам.
             </motion.p>
             <motion.div style={styles.aiChatContainer} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.3 }}>
-                 <AnimatePresence>
+                <AnimatePresence>
                     {messages.map((msg, index) => {
-                        if (msg.type === 'typing') {
-                            return <TypingIndicator key="typing" />;
-                        }
+                        if (msg.type === 'typing') { return <TypingIndicator key="typing" />; }
                         return (
-                            <motion.div
-                                key={index}
-                                style={ msg.type === 'user' ? {...styles.messageBubble, ...styles.userMessage} : {...styles.messageBubble, ...styles.aiMessage} }
-                                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                layout
-                            >
+                            <motion.div key={index}
+                                style={msg.type === 'user' ? { ...styles.messageBubble, ...styles.userMessage } : { ...styles.messageBubble, ...styles.aiMessage }}
+                                initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0 }} layout >
                                 {msg.text}
                             </motion.div>
                         );
@@ -566,96 +740,373 @@ const AiStorySection = React.memo(() => {
     );
 });
 
-const Footer = React.memo(() => {
-    // Код этого компонента остается без изменений
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
+const Accordion = ({ title, children, defaultOpen = false }) => {
+    const [isOpen, setIsOpen] = useState(defaultOpen);
+    return (
+        <div style={styles.accordionItem}>
+            <motion.header
+                style={styles.accordionHeader}
+                onClick={() => setIsOpen(!isOpen)}
+                initial={false}
+            >
+                {title}
+                <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+                    <ChevronDown />
+                </motion.div>
+            </motion.header>
+            <AnimatePresence initial={false}>
+                {isOpen && (
+                    <motion.section
+                        key="content"
+                        initial="collapsed"
+                        animate="open"
+                        exit="collapsed"
+                        variants={{
+                            open: { opacity: 1, height: "auto" },
+                            collapsed: { opacity: 0, height: 0 }
+                        }}
+                        transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+                        style={styles.accordionContent}
+                    >
+                        <div style={styles.accordionText}>{children}</div>
+                    </motion.section>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
 
+const FeaturesSection = React.memo(() => {
+    const [messages, setMessages] = React.useState([]);
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobileView(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    React.useEffect(() => {
+        const chatFlow = [
+            () => setMessages([{ type: 'user', text: 'Какие у тебя есть инструменты для авторов?' }]),
+            () => setMessages(prev => [...prev, { type: 'typing' }]),
+            () => setMessages(prev => [
+                ...prev.filter(m => m.type !== 'typing'),
+                { type: 'ai', text: 'Я могу помочь с генерацией идей для постов, написать текст в любом стиле, создать уникальные изображения и даже проверить факты. А наш редактор — это настоящее графическое полотно для вашего творчества!' }
+            ])
+        ];
+
+        const timer1 = setTimeout(chatFlow[0], 500);
+        const timer2 = setTimeout(chatFlow[1], 1800);
+        const timer3 = setTimeout(chatFlow[2], 5000);
+
+        return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); }
+    }, []);
+
+    const TypingIndicator = () => (
+        <motion.div style={styles.typingIndicatorContainer} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0 }} />
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }} />
+            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} />
+        </motion.div>
+    );
+    
+    const featuresLayoutDyn = isMobileView ? {...styles.featuresSection, gridTemplateColumns: '1fr', gap: '2rem'} : styles.featuresSection;
+
+    return (
+        <section style={{padding: '4rem 1rem'}}>
+            <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+                Платформа нового поколения
+            </motion.h2>
+            <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
+                sYnask — это не просто соцсеть. Это экосистема для творчества, общения и безопасности, созданная с помощью передовых технологий.
+            </motion.p>
+            <div style={featuresLayoutDyn}>
+                <div style={styles.featuresDescription}>
+                   <Accordion title="Инструменты для авторов" defaultOpen={true}>
+                       Мы предоставляем авторам мощные AI-функции и уникальный редактор постов. Представьте себе не просто текстовое поле, а безграничное графическое полотно, где вы можете комбинировать текст, изображения, видео и интерактивные элементы. Наш AI поможет сгенерировать контент, найти вдохновение и даже дописать за вас текст.
+                   </Accordion>
+                   <Accordion title="Защита авторских прав">
+                       Ваш контент — ваша собственность. Мы разрабатываем систему на основе блокчейн-технологий, которая закрепляет авторство за создателем. Каждая уникальная работа получает цифровой сертификат, который невозможно подделать. Это как NFT, но создано специально для защиты интеллектуальной собственности в социальной сети.
+                   </Accordion>
+                    <Accordion title="Приватность и безопасность">
+                        Все ваши личные переписки защищены сквозным шифрованием (E2E). Это значит, что никто, даже мы, не может получить доступ к их содержанию. Ваша приватность — наш абсолютный приоритет.
+                    </Accordion>
+                </div>
+                <motion.div style={styles.aiChatContainer} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.3 }}>
+                    <AnimatePresence>
+                        {messages.map((msg, index) => {
+                            if (msg.type === 'typing') { return <TypingIndicator key="typing" />; }
+                            return (
+                                <motion.div key={index}
+                                    style={msg.type === 'user' ? { ...styles.messageBubble, ...styles.userMessage } : { ...styles.messageBubble, ...styles.aiMessage }}
+                                    initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0 }} layout >
+                                    {msg.text}
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
+                </motion.div>
+            </div>
+        </section>
+    );
+});
+
+
+const InstallationGuide = () => {
+    const [platform, setPlatform] = useState('pc'); // 'pc' или 'mobile'
+    const [browser, setBrowser] = useState('chrome'); // 'chrome', 'yandex', 'edge', 'safari'
+
+    const instructions = {
+        pc: {
+            chrome: [
+                'Откройте sYnask в браузере Chrome.',
+                'В адресной строке справа нажмите на иконку "Установить".',
+                'Следуйте инструкциям на экране, чтобы завершить установку.',
+            ],
+            yandex: [
+                'Откройте sYnask в Яндекс.Браузере.',
+                'Нажмите на иконку (⋮) в правом верхнем углу.',
+                'Выберите "Инструменты" -> "Создать ярлык".',
+                'Отметьте "Открыть в отдельном окне" и нажмите "Создать".',
+            ],
+            edge: [
+                'Откройте sYnask в браузере Microsoft Edge.',
+                'Нажмите на иконку (...) в правом верхнем углу.',
+                'Выберите "Приложения" -> "Установить этот сайт как приложение".',
+                'Дайте приложению имя и нажмите "Установить".',
+            ],
+        },
+        mobile: {
+            chrome: [
+                'Откройте sYnask в Chrome на Android.',
+                'Нажмите на иконку меню (⋮) в правом верхнем углу.',
+                'Выберите пункт "Установить приложение" или "Добавить на главный экран".',
+                'Подтвердите добавление.',
+            ],
+            safari: [
+                'Откройте sYnask в Safari на вашем iPhone или iPad.',
+                'Нажмите на иконку "Поделиться" (квадрат со стрелкой вверх).',
+                'Пролистайте вниз и выберите "На экран «Домой»".',
+                'Нажмите "Добавить", и иконка sYnask появится на вашем рабочем столе.',
+            ],
+        }
+    };
+    
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobileView(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const availableBrowsers = platform === 'pc' ? ['chrome', 'yandex', 'edge'] : ['chrome', 'safari'];
+    
+    useEffect(() => {
+        if (!availableBrowsers.includes(browser)) {
+            setBrowser(availableBrowsers[0]);
+        }
+    }, [platform, browser, availableBrowsers]);
+
+    const installationLayoutDyn = isMobileView ? {...styles.installationLayout, gridTemplateColumns: '1fr', gap: '2rem'} : styles.installationLayout;
+
+    return (
+        <section style={styles.installationSection}>
+            <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+                Всегда под рукой
+            </motion.h2>
+            <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
+                Установите sYnask как приложение на ваше устройство, чтобы получать доступ к ленте в один клик. Выберите платформу и браузер, чтобы увидеть инструкцию.
+            </motion.p>
+
+            <div style={installationLayoutDyn}>
+                <div style={styles.installationControls}>
+                    <div style={styles.controlGroup}>
+                        <label style={styles.controlLabel}>1. Выберите устройство:</label>
+                        <div style={styles.controlButtons}>
+                            <button
+                                style={platform === 'pc' ? { ...styles.controlButton, ...styles.activeControlButton } : styles.controlButton}
+                                onClick={() => setPlatform('pc')}
+                            >
+                                <ComputerIcon /> ПК
+                            </button>
+                            <button
+                                style={platform === 'mobile' ? { ...styles.controlButton, ...styles.activeControlButton } : styles.controlButton}
+                                onClick={() => setPlatform('mobile')}
+                            >
+                                <SmartphoneIcon /> Смартфон
+                            </button>
+                        </div>
+                    </div>
+                    <div style={styles.controlGroup}>
+                        <label style={styles.controlLabel}>2. Выберите браузер:</label>
+                        <div style={styles.controlButtons}>
+                            <AnimatePresence>
+                                {availableBrowsers.map(b => (
+                                    <motion.button
+                                        key={b}
+                                        style={browser === b ? { ...styles.controlButton, ...styles.activeControlButton } : styles.controlButton}
+                                        onClick={() => setBrowser(b)}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                    >
+                                        {b.charAt(0).toUpperCase() + b.slice(1)}
+                                    </motion.button>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                </div>
+                <div style={styles.instructionBox}>
+                    <AnimatePresence mode="wait">
+                        <motion.ol
+                            key={platform + browser}
+                            style={styles.instructionList}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {instructions[platform][browser]?.map((step, i) => <li key={i}>{step}</li>)}
+                        </motion.ol>
+                    </AnimatePresence>
+                </div>
+            </div>
+        </section>
+    );
+};
+
+
+const NewsSection = () => {
+    const sliderRef = useRef(null);
+    const newsData = useMemo(() => [
+        { id: 1, title: 'Запуск AI-помощника в sYnask!', date: '15 июня 2025', image: 'https://images.unsplash.com/photo-1620712943543-2858200f745a?q=80&w=2070&auto=format&fit=crop', link: '#' },
+        { id: 2, title: 'Новый уровень приватности: сквозное шифрование', date: '10 июня 2025', image: 'https://images.unsplash.com/photo-1554224155-8d044b4a15e3?q=80&w=2070&auto=format&fit=crop', link: '#' },
+        { id: 3, title: 'Кастомизация ленты: теперь вы решаете все', date: '5 июня 2025', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2071&auto=format&fit=crop', link: '#' },
+        { id: 4, title: 'Мы привлекли новый раунд инвестиций', date: '1 июня 2025', image: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=2070&auto=format&fit=crop', link: '#' },
+        { id: 5, title: 'Присоединяйтесь к нашей команде!', date: '28 мая 2025', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop', link: '#' },
+    ], []);
+
+    return(
+        <section style={styles.newsSection}>
+             <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+                Что нового?
+            </motion.h2>
+            <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
+                Следите за последними обновлениями и новостями проекта sYnask. Мы постоянно развиваемся для вас.
+            </motion.p>
+            <motion.div ref={sliderRef} style={styles.newsSliderContainer} drag="x" dragConstraints={{ left: -((newsData.length - 1.5) * 350), right: 0 }}>
+                {newsData.map(item => (
+                    <motion.div key={item.id} style={styles.newsCard}>
+                        <div style={{ ...styles.newsImage, backgroundImage: `url(${item.image})` }} />
+                        <div style={styles.newsContent}>
+                            <span style={styles.newsDate}>{item.date}</span>
+                            <h3 style={styles.newsTitle}>{item.title}</h3>
+                            <a href={item.link} style={styles.newsReadMore}>Читать полностью →</a>
+                        </div>
+                    </motion.div>
+                ))}
+            </motion.div>
+        </section>
+    );
+};
+
+
+const Footer = React.memo(() => {
+    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
     useEffect(() => {
         const handleResize = () => setIsDesktop(window.innerWidth > 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const footerGridStyle = {
-        ...styles.footerGrid,
-        gridTemplateColumns: isDesktop ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)',
-    };
+    const footerGridStyle = { ...styles.footerGrid, gridTemplateColumns: isDesktop ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)' };
+    const footerBottomStyle = { ...styles.footerBottom, flexDirection: isDesktop ? 'row' : 'column', gap: isDesktop ? 0 : '1rem' };
     
-    const footerBottomStyle = {
-        ...styles.footerBottom,
-        flexDirection: isDesktop ? 'row' : 'column',
-    }
-
     return (
         <footer style={styles.footer}>
             <div style={footerGridStyle}>
-                <div><h3 style={{fontWeight: 'bold', fontSize: '1.25rem', color: 'white', marginBottom: '1rem'}}>sYnask</h3><p style={{fontSize: '0.875rem'}}>Будущее социальных сетей.</p></div>
-                <div style={styles.footerColumn}><h4 style={{fontWeight: 600, color: 'white', marginBottom: '1rem'}}>Навигация</h4><a href="#" style={styles.footerLink}>Главная</a><a href="#" style={styles.footerLink}>О нас</a></div>
-                <div style={styles.footerColumn}><h4 style={{fontWeight: 600, color: 'white', marginBottom: '1rem'}}>Ресурсы</h4><a href="#" style={styles.footerLink}>Документация</a><a href="#" style={styles.footerLink}>Поддержка</a></div>
-                <div><h4 style={{fontWeight: 600, color: 'white', marginBottom: '1rem'}}>Присоединяйтесь</h4><div style={{display: 'flex', gap: '1rem'}}><a href="#" style={styles.footerLink}><GithubIcon /></a><a href="#" style={styles.footerLink}><TelegramIcon /></a><a href="#" style={styles.footerLink}><TwitterIcon /></a></div></div>
+                <div><h3 style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'white', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><SynaskIcon />sYnask</h3><p style={{ fontSize: '0.875rem' }}>Будущее социальных сетей.</p></div>
+                <div style={styles.footerColumn}><h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem' }}>Навигация</h4><a href="#" style={styles.footerLink}>Главная</a><a href="#" style={styles.footerLink}>О нас</a></div>
+                <div style={styles.footerColumn}><h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem' }}>Ресурсы</h4><a href="#" style={styles.footerLink}>Документация</a><a href="#" style={styles.footerLink}>Поддержка</a></div>
+                <div><h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem' }}>Присоединяйтесь</h4><div style={{ display: 'flex', gap: '1rem' }}><a href="#" style={styles.footerLink}><GithubIcon /></a><a href="#" style={styles.footerLink}><TelegramIcon /></a><a href="#" style={styles.footerLink}><TwitterIcon /></a></div></div>
             </div>
             <div style={footerBottomStyle}>
                 <p>&copy; {new Date().getFullYear()} sYnask. Все права защищены.</p>
-                <div style={{display: 'flex', gap: '1rem', marginTop: isDesktop ? 0 : '1rem'}}><a href="#" style={styles.footerLink}>Политика конфиденциальности</a><a href="#" style={styles.footerLink}>Условия использования</a></div>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: isDesktop ? 0 : '1rem' }}><a href="#" style={styles.footerLink}>Политика конфиденциальности</a><a href="#" style={styles.footerLink}>Условия использования</a></div>
             </div>
         </footer>
     );
 });
 
 
-// ОСНОВНОЙ КОМПОНЕНТ СТРАНИЦЫ
+// --- ОСНОВНОЙ КОМПОНЕНТ СТРАНИЦЫ ---
 export default function App() {
     const [email, setEmail] = useState('');
+    const badgeStatusStyle = { ...styles.badge, backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#4ADE80' };
+    const badgeVersionStyle = { ...styles.badge, backgroundColor: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', color: '#C084FC' };
+    const badgeUsersStyle = { ...styles.badge, backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', color: '#93C5FD' };
 
-    const badgeStatusStyle = {...styles.badge, backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#4ADE80'};
-    const badgeVersionStyle = {...styles.badge, backgroundColor: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', color: '#C084FC'};
-    const badgeUsersStyle = {...styles.badge, backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', color: '#93C5FD'};
+    // --- Логика для анимации скролла ---
+    const mainRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: mainRef,
+        offset: ['start start', 'end start']
+    });
+
+    const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+    const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.85]);
 
     return (
         <div style={styles.appContainer}>
             <ParticlesBackground />
             <Header />
-            <main>
+            <main ref={mainRef}>
                 <section style={styles.heroSection}>
                     <motion.div 
-                        style={styles.badgesContainer}
-                        initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.6 }}
+                        style={{...styles.heroContentWrapper, opacity: heroOpacity, scale: heroScale}}
                     >
-                         <div style={badgeStatusStyle}>Статус: Online</div>
-                         <div style={badgeVersionStyle}>Версия: 0.6.0-final</div>
-                         <div style={badgeUsersStyle}>Пользователей: 3,102</div>
-                    </motion.div>
-
-                    <motion.h1 style={styles.heroTitle} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                        Войдите в будущее
-                    </motion.h1>
-                    <motion.p style={styles.heroSubtitle} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-                        Алгоритмы — под контролем. Ты — в фокусе.
-                    </motion.p>
-                    <motion.form
-                        style={styles.emailForm}
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}
-                        onSubmit={(e) => e.preventDefault()}
-                    >
-                        <div style={styles.emailInputContainer}>
-                            <input 
-                                style={styles.emailInput}
-                                type="email" 
-                                placeholder="your.email@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <button style={styles.navButton} type="submit">
-                                Продолжить
-                            </button>
+                        <div style={styles.badgesContainer}>
+                            <div style={badgeStatusStyle}>Статус: Online</div>
+                            <div style={badgeVersionStyle}>Версия: 0.7.1-scroll</div>
+                            <div style={badgeUsersStyle}>Пользователей: 3,102</div>
                         </div>
-                    </motion.form>
+
+                        <h1 style={styles.heroTitle}>
+                            Войдите в будущее
+                        </h1>
+                        <p style={styles.heroSubtitle}>
+                            Алгоритмы — под контролем. Ты — в фокусе.
+                        </p>
+                        <form
+                            style={styles.emailForm}
+                            onSubmit={(e) => e.preventDefault()}
+                        >
+                            <div style={styles.emailInputContainer}>
+                                <input
+                                    style={styles.emailInput}
+                                    type="email"
+                                    placeholder="your.email@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                                <button style={styles.navButton} type="submit">Продолжить</button>
+                            </div>
+                        </form>
+                    </motion.div>
                 </section>
-                
-                {/* Новая обертка для контента после hero-секции */}
-                <div style={styles.contentWrapper}>
-                    <PhoneFeedSection />
-                    <AiStorySection />
+
+                <div style={styles.pageContent}>
+                    <div style={styles.glassPane}>
+                        <FeaturesSection />
+                        <PhoneFeedSection />
+                        <AiStorySection />
+                        <InstallationGuide />
+                        <NewsSection />
+                    </div>
                 </div>
             </main>
             <Footer />
