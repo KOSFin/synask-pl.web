@@ -219,45 +219,45 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center', // Всегда 'center', трюк будет в padding
-        textAlign: 'center',
-        padding: '1rem',
+        padding: '0 1rem', // Убрал вертикальный padding, он теперь управляется ниже
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        // Смещаем контент вверх на мобильных, добавляя отступ СНИЗУ.
-        // Это поднимает блок ввода выше центра, что удобно при появлении клавиатуры.
-        paddingBottom: isMobile ? '20vh' : '1rem', 
+        // На ПК - центрируем. На мобильных - прижимаем к верху.
+        justifyContent: isMobile ? 'flex-start' : 'center', 
+        // На мобильных - даем отступ СВЕРХУ. На ПК - небольшой отступ для баланса.
+        paddingTop: isMobile ? '15vh' : '1rem',
+        paddingBottom: '1rem', // Добавим небольшой нижний отступ для всех
+    }),
+
+    // -- ЗАГОЛОВОК --
+    heroTitle: (isMobile) => ({
+        fontWeight: 800,
+        background: 'linear-gradient(to right, #FB923C, #C084FC)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        marginBottom: '1.5rem',
+        textAlign: 'center',
+        width: '100%',
+        fontSize: isMobile ? '7.5vw' : 'clamp(2.5rem, 5vw + 1rem, 3.75rem)',
+        whiteSpace: isMobile ? 'nowrap' : 'normal',
+    }),
+
+    // -- ПОДЗАГОЛОВОК --
+    heroSubtitle: (isMobile) => ({
+        fontSize: '1.125rem',
+        color: '#9CA3AF',
+        maxWidth: '42rem',
+        textAlign: 'center',
+        // Отступы меняются из-за смены порядка блоков на мобильных
+        marginTop: isMobile ? '1.5rem' : 0,
+        marginBottom: isMobile ? 0 : '2rem',
     }),
     heroContentWrapper: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
     },
-    // Превращаем в функцию для адаптации размера и выравнивания
-    heroTitle: (isMobile) => ({
-        fontWeight: 800,
-        background: 'linear-gradient(to right, #FB923C, #C084FC)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        marginBottom: '1rem',
-        textAlign: 'center', // Принудительное выравнивание по центру
-        width: '100%',       // Занимает всю доступную ширину родителя
-        
-        // Адаптивный размер и запрет переноса строки на мобильных
-        fontSize: isMobile ? '7.5vw' : 'clamp(2.5rem, 5vw + 1rem, 3.75rem)',
-        whiteSpace: isMobile ? 'nowrap' : 'normal',
-    }),
-    // Превращаем в функцию, чтобы управлять отступами
-    heroSubtitle: (isMobile) => ({
-        fontSize: '1.125rem',
-        color: '#9CA3AF',
-        maxWidth: '42rem',
-        textAlign: 'center',
-        // Управляем отступами в зависимости от устройства
-        marginTop: isMobile ? '1.5rem' : 0,
-        marginBottom: isMobile ? 0 : '2rem',
-    }),
     badgesContainer: {
         display: 'flex',
         flexWrap: 'wrap',

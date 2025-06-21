@@ -819,6 +819,67 @@ export default function App() {
                         </p>
 
                     </motion.div>
+                    {/* Стрелочка "Листай вниз" у нижней границы экрана */}
+                    {/* 
+                        На мобильных устройствах стрелка не отображается, потому что она перекрывается или становится незаметной из-за особенностей верстки (например, position: 'sticky' и paddingTop: '15vh' у heroSection), а также из-за того, что на мобильных часто нет необходимости явно указывать на скролл. 
+                        Если вы хотите, чтобы стрелка была видна и на мобильных, просто уберите условие ниже.
+                    */}
+                        <div
+                            style={{
+                                position: 'absolute',
+                                left: '50%',
+                                bottom: isMobile ? 150 : 32,
+                                transform: 'translateX(-50%)',
+                                zIndex: 20,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                            }}
+                        >
+                            <span
+                                style={{
+                                    display: 'block',
+                                    width: 36,
+                                    height: 36,
+                                    borderRadius: '50%',
+                                    background: 'rgba(255,255,255,0.08)',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginBottom: 4,
+                                    animation: 'arrow-bounce 1.6s infinite',
+                                }}
+                            >
+                                <svg width={22} height={22} viewBox="0 0 24 24" fill="none" style={{display: 'block'}} xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 5v14M12 19l-5-5M12 19l5-5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </span>
+                            <span
+                                style={{
+                                    fontSize: '1rem',
+                                    color: '#9CA3AF',
+                                    opacity: 0.8,
+                                    fontWeight: 500,
+                                    letterSpacing: '0.01em',
+                                    marginTop: 0,
+                                    textShadow: '0 1px 4px rgba(0,0,0,0.18)',
+                                }}
+                            >
+                                Листай вниз
+                            </span>
+                            {/* Анимация стрелки через встроенный keyframes */}
+                            <style>
+                                {`
+                                    @keyframes arrow-bounce {
+                                        0%, 100% { transform: translateY(0);}
+                                        50% { transform: translateY(8px);}
+                                    }
+                                `}
+                            </style>
+                        </div>
                 </section>
                 <IntroSection />
                 <div style={styles.pageContent}>
