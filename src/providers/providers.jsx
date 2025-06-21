@@ -1,5 +1,8 @@
 // app/providers.jsx
+import { DeviceProvider } from '../hooks/useDevice';
 
 export const Providers = ({ children }) => (
-    {children}
+    <DeviceProvider>
+        {children}
+    </DeviceProvider>
 );

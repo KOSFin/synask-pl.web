@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 //import Login from './pages/Login';
 //import Registration from './pages/Registration';
-import MainPage from './pages/MainPage';
+import MainPage from './pages/WelcomePage/WelcomePage';
 
-// import { Providers } from './providers';
+import { Providers } from './providers/providers';
 import DesktopApp from './app/DesktopApp';
 import PocketApp from './app/PocketApp';
 
@@ -22,8 +22,10 @@ const VersionRouter = () => {
 
     // Determine version based on screen size
     const newVersion = width > 1199 && height > 569 ? '/d' : '/p';
-    if (!currentPath.startsWith('/p/') && !currentPath.startsWith('/d/')) {
+    if (!currentPath.startsWith('/p/') && !currentPath.startsWith('/d/') && currentPath !== '/p' && currentPath !== '/d') {
       UrlPath = `${newVersion}${currentPath}`;
+    } else if (currentPath == '/p' || currentPath == '/d') {
+      UrlPath = `${currentPath}/`;
     } else {
       UrlPath = `${currentPath}`;
     }
@@ -42,18 +44,18 @@ const VersionRouter = () => {
   if (version === null) return null; // or a loading spinner if needed
 
   return (
-    <Routes>
-      <Route path="/d/*" element={<DesktopApp />} />
-      <Route path="/desktop/*" element={<DesktopApp />} />
-      <Route path="/p/*" element={<PocketApp />} />
-    </Routes>
+      <Routes>
+        <Route path="/d/*" element={<DesktopApp />} />
+        <Route path="/desktop/*" element={<DesktopApp />} />
+        <Route path="/p/*" element={<PocketApp />} />
+      </Routes>
   );
 };
 
 const App = () => {
   return (
     <Router>
-      {/* <Providers> */}
+      <Providers>
         <Routes>
           <Route path="/main" element={<MainPage />} />
           {/* <Route path="/login" element={<Login />} />
@@ -61,7 +63,7 @@ const App = () => {
           <Route path="/*" element={<VersionRouter />} />
           <Route path="*" element={<Navigate to="/main" />} />
         </Routes>
-      {/* </Providers> */}
+      </Providers>
     </Router>
   );
 };

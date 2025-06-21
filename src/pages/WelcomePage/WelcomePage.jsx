@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
+import styles from './WelcomePage.styles';
+import {useDevice} from '../../hooks/useDevice';
 
-// --- Иконки ---
 const ChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"></path></svg>;
 const GithubIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> );
 const TelegramIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7.89 12.56L2 9l20-7Z"/><path d="m22 2-15 12 4 10 4-10-3-7 6-2Z"/></svg> );
 const TwitterIcon = () => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 1.4 3.3 4.4 3.3 4.4s-1.4 1.4-3.3 1.4c-1.8 0-3.3-1.4-3.3-1.4s-1.4 2.8-4.7 2.8c-2.2 0-4.7-1.4-4.7-1.4s-1.4-1.4-1.4-2.8c0-1.4 1.4-2.8 1.4-2.8s2.1-.7 3.3 0c1.2.7 2.1 2.1 2.1 2.1s.7-2.1 2.8-2.8c2.1-.7 3.3-1.4 3.3-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-1.4-2.8s-2.1.7-2.8 1.4c-.7.7-1.4 2.1-1.4 2.1s-2.1-2.1-2.8-2.8c-.7-.7-2.1-1.4-2.8-1.4c-1.4 0-2.8 1.4-2.8 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1s.7 1.4 2.1 2.1c1.4.7 2.8 1.4 4.7 1.4 2.2 0 4.7-1.4 4.7-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-2.8-2.8s-2.8 1.4-3.3 2.1c-.5.7-1.4 2.1-1.4 2.1s-1.4-2.1-2.8-2.8c-1.4-.7-2.8-1.4-4.7-1.4c-2.2 0-4.7 1.4-4.7 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1s.7 1.4 2.1 2.1c1.4.7 2.8 1.4 4.7 1.4 2.2 0 4.7-1.4 4.7-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-2.8-2.8s-2.8 1.4-3.3 2.1c-.5.7-1.4 2.1-1.4 2.1s-1.4-2.1-2.8-2.8c-1.4-.7-2.8-1.4-4.7-1.4c-2.2 0-4.7 1.4-4.7 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1s.7 1.4 2.1 2.1c1.4.7 2.8 1.4 4.7 1.4 2.2 0 4.7-1.4 4.7-1.4s1.4-1.4 1.4-2.8c0-1.4-1.4-2.8-2.8-2.8s-2.8 1.4-3.3 2.1c-.5.7-1.4 2.1-1.4 2.1s-1.4-2.1-2.8-2.8c-1.4-.7-2.8-1.4-4.7-1.4c-2.2 0-4.7 1.4-4.7 1.4s-1.4 1.4-1.4 2.8c0 1.4 1.4 2.8 1.4 2.8s1.4.7 2.8 0c1.4-.7 2.1-2.1 2.1-2.1Z"/></svg>);
 const SmartphoneIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const ComputerIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
-// Новая иконка для логотипа
 const SynaskIcon = () => (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M14 2.33331C16.928 2.33331 19.5543 3.69343 21.4087 5.91891C23.263 8.14439 24.1667 11.0188 24.0134 13.9167C23.8601 16.8145 22.6611 19.5259 20.6667 21.4937C18.6723 23.4616 15.999 24.5 13.1667 24.5C10.2387 24.5 7.61239 23.14" stroke="url(#paint0_linear_icon)" strokeWidth="3" strokeLinecap="round"/>
@@ -27,322 +27,6 @@ const SynaskIcon = () => (
     </svg>
 );
 
-
-// --- Стили ---
-const styles = {
-    appContainer: {
-        backgroundColor: '#000',
-        color: '#fff',
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    },
-    header: { // Базовые стили хедера, остальное управляется анимацией
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        zIndex: 50,
-        transition: 'background-color 0.3s ease, border-color 0.3s ease', // Для плавности
-    },
-    headerContent: {
-        maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex',
-        alignItems: 'center', justifyContent: 'space-between', height: '5rem',
-    },
-    logo: {
-        flexShrink: 0, fontWeight: 'bold', fontSize: '1.875rem', letterSpacing: '0.05em',
-        display: 'flex', alignItems: 'center', gap: '0.75rem', // Flex для иконки и текста
-    },
-    nav: { alignItems: 'center', gap: '1rem' },
-    navLink: {
-        color: '#D1D5DB', transition: 'color 0.2s', padding: '0.5rem 0.75rem', borderRadius: '0.375rem',
-        textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: '0.25rem',
-    },
-    navButton: {
-        background: 'linear-gradient(to right, #F97316, #A855F7)', color: 'white', fontWeight: 'bold',
-        padding: '0.5rem 1.25rem', borderRadius: '0.5rem', transition: 'all 0.3s',
-        border: 'none', cursor: 'pointer', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
-    },
-    heroSection: {
-        height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', textAlign: 'center', padding: '1rem',
-        position: 'sticky', // Делаем секцию "липкой"
-        top: 0,
-        zIndex: 10,
-    },
-    heroContentWrapper: { // Обертка для элементов, которые будут анимироваться
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-    },
-    badgesContainer: {
-        display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem',
-    },
-    badge: {
-        fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.75rem', borderRadius: '9999px',
-    },
-    heroTitle: {
-        fontSize: 'clamp(2.5rem, 5vw + 1rem, 3.75rem)', fontWeight: 800, marginBottom: '1rem',
-        background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-    },
-    sectionTitle: { // Общий стиль для заголовков секций
-        fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, marginBottom: '1rem',
-        background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent', textAlign: 'center',
-    },
-    sectionSubtitle: { // Общий стиль для подзаголовков
-        marginBottom: '3rem', fontSize: '1.125rem', color: '#9CA3AF',
-        maxWidth: '48rem', textAlign: 'center', margin: '0 auto 3rem auto',
-    },
-    heroSubtitle: {
-        marginBottom: '2rem', fontSize: '1.125rem', color: '#9CA3AF', maxWidth: '42rem',
-    },
-    emailForm: { width: '100%', maxWidth: '28rem' },
-    emailInputContainer: {
-        display: 'flex', alignItems: 'center', backgroundColor: 'rgba(17, 24, 39, 0.5)',
-        border: '1px solid rgba(168, 85, 247, 0.5)', borderRadius: '0.5rem',
-        padding: '0.5rem', backdropFilter: 'blur(4px)',
-    },
-    emailInput: {
-        appearance: 'none', backgroundColor: 'transparent', border: 'none',
-        width: '100%', color: 'white', marginRight: '0.75rem', padding: '0.5rem',
-        lineHeight: '1.5',
-    },
-    pageContent: { // Новый стиль для контента, который "наезжает"
-        position: 'relative',
-        zIndex: 30, // Выше чем heroSection, но ниже хедера
-    },
-    glassPane: {
-        position: 'relative',
-        zIndex: 10,
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)', // для Safari
-        backgroundColor: 'rgba(25, 22, 47, 0.94)',
-        backdropFilter: 'blur(12px) saturate(150%)',
-        borderBottom: '1px solid rgba(187, 0, 255, 0.37)',
-        borderTop: '1px solid rgba(187, 0, 255, 0.37)',
-        borderRadius: '1.5rem',
-        padding: '2rem',
-        margin: '0 auto',
-        maxWidth: '100vw',
-        borderTopRightRadius: 0,
-        borderTopLeftRadius: 0,
-    },
-    phoneSectionContainer: {
-        position: 'relative', height: '220vh', width: '100%',
-    },
-    phoneStickyContainer: {
-        position: 'sticky', top: '13%', marginTop: '20px', height: '85vh', display: 'flex',
-        justifyContent: 'center', alignItems: 'center',
-    },
-    phoneBody: {
-        position: 'relative', width: 'clamp(300px, 22vw, 400px)', height: '100%',
-        backgroundColor: '#000', border: '10px solid #27272a',
-        borderRadius: '3rem', boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.4)',
-        overflow: 'hidden', display: 'flex', flexDirection: 'column',
-    },
-    phoneNotch: {
-        position: 'absolute', top: '0px', left: '50%', transform: 'translateX(-50%)',
-        width: '35%', height: '1.75rem', backgroundColor: '#27272a',
-        borderRadius: '0 0 1rem 1rem', zIndex: 20,
-    },
-    phoneFeed: { position: 'relative', width: '100%' },
-    postCard: {
-        width: '100%', borderRadius: '1rem', backgroundColor: '#111827',
-        display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        marginBottom: '1rem', border: '1px solid rgba(255, 255, 255, 0.05)',
-    },
-    postHeader: { display: 'flex', alignItems: 'center', padding: '0.75rem', gap: '0.75rem' },
-    postAvatar: { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#374151', backgroundSize: 'cover' },
-    postUsername: { fontWeight: '600', color: 'white' },
-    postImage: { aspectRatio: '1 / 1', width: '100%', backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: '#374151' },
-    postContent: { padding: '0.5rem 1rem 1rem 1rem' },
-    postActions: { display: 'flex', gap: '1rem', marginBottom: '0.5rem' },
-    postActionIcon: { cursor: 'pointer', transition: 'transform 0.2s ease', fontSize: '1.5rem' },
-    postLikes: { fontWeight: '600', fontSize: '0.875rem', color: 'white', marginBottom: '0.5rem' },
-    postDescription: { fontSize: '0.875rem', color: '#D1D5DB', lineHeight: 1.5 },
-    aiStorySection: {
-        minHeight: '100vh', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center', position: 'relative',
-        padding: '4rem 1rem', textAlign: 'center',
-    },
-    aiChatContainer: {
-        maxWidth: '48rem', backgroundColor: 'rgba(17, 24, 39, 0.5)',
-        border: '1px solid rgba(168, 85, 247, 0.5)', borderRadius: '1rem',
-        padding: '1.5rem', backdropFilter: 'blur(10px)', minHeight: '300px',
-        display: 'flex', flexDirection: 'column', gap: '1rem',
-    },
-    messageBubble: { padding: '0.75rem 1rem', borderRadius: '1rem', maxWidth: '75%', lineHeight: 1.5, fontSize: '1rem' },
-    userMessage: { backgroundColor: '#A855F7', color: 'white', alignSelf: 'flex-end', borderBottomRightRadius: '0.25rem' },
-    aiMessage: { backgroundColor: '#374151', color: 'white', alignSelf: 'flex-start', borderBottomLeftRadius: '0.25rem' },
-    typingIndicatorContainer: { display: 'flex', alignItems: 'center', gap: '0.5rem', alignSelf: 'flex-start' },
-    typingDot: { width: '8px', height: '8px', backgroundColor: '#9CA3AF', borderRadius: '50%' },
-    footer: {
-        backgroundColor: 'rgba(17, 24, 39, 0.5)', borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        color: '#9CA3AF', padding: '3rem 1rem', position: 'relative', zIndex: 30, marginTop: '20px',
-    },
-    footerGrid: { maxWidth: '1280px', margin: '0 auto', display: 'grid', gap: '2rem' },
-    footerColumn: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
-    footerLink: { color: 'inherit', textDecoration: 'none', transition: 'color 0.2s' },
-    footerBottom: {
-        maxWidth: '1280px', margin: '2rem auto 0', paddingTop: '2rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex',
-        justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem',
-    },
-    installationSection: {
-        padding: '4rem 1rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    installationLayout: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 2fr',
-        gap: '3rem',
-        width: '100%',
-        maxWidth: '64rem',
-        alignItems: 'flex-start',
-    },
-    installationControls: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.5rem',
-    },
-    controlGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-    },
-    controlLabel: {
-        fontWeight: 600,
-        color: '#D1D5DB',
-        fontSize: '1rem',
-    },
-    controlButtons: {
-        display: 'flex',
-        gap: '0.5rem',
-        flexWrap: 'wrap',
-    },
-    controlButton: {
-        padding: '0.5rem 1rem',
-        borderRadius: '0.5rem',
-        border: '1px solid #374151',
-        backgroundColor: 'transparent',
-        color: '#9CA3AF',
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-    },
-    activeControlButton: { // Стиль для активной кнопки
-        backgroundColor: '#A855F7',
-        color: 'white',
-        borderColor: '#A855F7',
-    },
-    instructionBox: {
-        backgroundColor: 'rgba(17, 24, 39, 0.7)',
-        borderRadius: '1rem',
-        padding: '1.5rem',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-    },
-    instructionList: {
-        listStylePosition: 'inside',
-        paddingLeft: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1rem',
-        color: '#D1D5DB',
-        lineHeight: 1.6,
-    },
-    newsSection: {
-        padding: '4rem 0',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-        overflow: 'hidden',
-    },
-    newsSliderContainer: {
-        display: 'flex',
-        width: '100%',
-        cursor: 'grab',
-    },
-    newsCard: {
-        flex: '0 0 clamp(280px, 80vw, 350px)',
-        margin: '0 1rem',
-        backgroundColor: '#111827',
-        borderRadius: '1rem',
-        overflow: 'hidden',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    newsImage: {
-        aspectRatio: '16 / 9',
-        width: '100%',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-    },
-    newsContent: {
-        padding: '1rem',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    newsDate: {
-        color: '#9CA3AF',
-        fontSize: '0.75rem',
-        marginBottom: '0.5rem',
-    },
-    newsTitle: {
-        color: 'white',
-        fontWeight: 600,
-        fontSize: '1.125rem',
-        marginBottom: 'auto',
-    },
-    newsReadMore: {
-        marginTop: '1rem',
-        color: '#C084FC',
-        textDecoration: 'none',
-        fontWeight: 600,
-        alignSelf: 'flex-start',
-    },
-    featuresSection: {
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center',
-    },
-    featuresDescription: { display: 'flex', flexDirection: 'column', gap: '1.5rem' },
-    accordionItem: {
-        border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '0.75rem',
-        backgroundColor: 'rgba(0,0,0,0.2)',
-    },
-    accordionHeader: {
-        padding: '1rem 1.5rem', cursor: 'pointer', display: 'flex',
-        justifyContent: 'space-between', alignItems: 'center',
-        fontWeight: 600, fontSize: '1.125rem', color: 'white',
-    },
-    accordionContent: { overflow: 'hidden' },
-    accordionText: {
-        padding: '0 1.5rem 1.5rem 1.5rem', color: '#D1D5DB', lineHeight: 1.6
-    },
-};
-
-// --- МАССИВЫ ДЛЯ ИСТОРИИ И ДИАГРАММЫ ---
-const historyData = [
-    { year: 2022, month: 'Март', event: 'Идея создания sYnask' },
-    { year: 2022, month: 'Июль', event: 'Начало разработки прототипа' },
-    { year: 2023, month: 'Январь', event: 'Первые тесты AI' },
-    { year: 2023, month: 'Октябрь', event: 'Запуск закрытой беты' },
-    { year: 2024, month: 'Май', event: 'Публичный релиз' },
-    { year: 2025, month: 'Июнь', event: 'AI-помощник и новые фичи' },
-];
-const timelinePoints = [
-    { year: 2022, month: 'Март', label: 'Идея', color: '#F97316' },
-    { year: 2022, month: 'Июль', label: 'Прототип', color: '#A855F7' },
-    { year: 2023, month: 'Январь', label: 'AI', color: '#F97316' },
-    { year: 2023, month: 'Октябрь', label: 'Бета', color: '#A855F7' },
-    { year: 2024, month: 'Май', label: 'Релиз', color: '#F97316' },
-    { year: 2025, month: 'Июнь', label: 'AI+', color: '#A855F7' },
-];
-
-// --- КОМПОНЕНТЫ ---
 
 const ParticlesBackground = React.memo(() => {
     const mountRef = useRef(null);
@@ -582,41 +266,20 @@ const ParticlesBackground = React.memo(() => {
     return <div ref={mountRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh', zIndex: 1 }} />;
 });
 
-
 const Header = React.memo(() => {
     const [isOpen, setIsOpen] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
     const [scrolled, setScrolled] = useState(false);
+    const { isMobile } = useDevice(); // <-- ИСПОЛЬЗУЕМ ХУК
 
-    // Отслеживаем прокрутку для изменения стиля хедера
     const { scrollY } = useScroll();
     useMotionValueEvent(scrollY, "change", (latest) => {
         setScrolled(latest > 50);
     });
 
-    useEffect(() => {
-        const handleResize = () => setIsDesktop(window.innerWidth > 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const headerVariants = {
-        top: {
-            backgroundColor: 'rgba(17, 24, 39, 0)',
-            backdropFilter: 'blur(0px) saturate(100%)',
-            borderColor: 'rgba(187, 0, 255, 0)',
-        },
-        scrolled: {
-            backgroundColor: 'rgba(17, 24, 39, 0.45)',
-            backdropFilter: 'blur(15px) saturate(150%)',
-            borderColor: 'rgba(187, 0, 255, 0.37)',
-        }
-    };
-
     return (
         <motion.header
-            style={{...styles.header, borderBottom: '1px solid'}}
-            variants={headerVariants}
+            style={styles.header}
+            variants={styles.headerVariants}
             animate={scrolled ? "scrolled" : "top"}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
         >
@@ -625,18 +288,26 @@ const Header = React.memo(() => {
                     <SynaskIcon />
                     <span>sYnask</span>
                 </div>
-                {isDesktop && (
-                    <nav style={{ ...styles.nav, display: 'flex' }}>
-                        <div onMouseLeave={() => setIsOpen(false)} style={{ position: 'relative' }}>
-                            <button onMouseEnter={() => setIsOpen(true)} style={styles.navLink}>О нас <ChevronDown /></button>
+
+                {!isMobile && ( // <-- ИСПОЛЬЗУЕМ isMobile
+                    <nav style={styles.desktopNav}>
+                        <div
+                            onMouseLeave={() => setIsOpen(false)}
+                            style={styles.dropdownContainer}
+                        >
+                            <button onMouseEnter={() => setIsOpen(true)} style={styles.navLink}>
+                                О нас <ChevronDown />
+                            </button>
                             <AnimatePresence>
                                 {isOpen && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                                        style={{ position: 'absolute', top: '100%', marginTop: '0.5rem', width: '12rem', backgroundColor: 'rgba(17, 24, 39, 0.8)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0.5rem', padding: '0.5rem' }}
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        style={styles.dropdownMenu}
                                     >
-                                        <a href="#" style={{...styles.navLink, width: '100%'}}>Наша Команда</a>
-                                        <a href="#" style={{...styles.navLink, width: '100%'}}>Карьера</a>
+                                        <a href="#" style={styles.dropdownLink}>Наша Команда</a>
+                                        <a href="#" style={styles.dropdownLink}>Карьера</a>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -644,6 +315,7 @@ const Header = React.memo(() => {
                         <a href="#" style={styles.navLink}>Фичи</a>
                     </nav>
                 )}
+
                 <button style={styles.navButton}>Начать</button>
             </div>
         </motion.header>
@@ -799,13 +471,7 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
 
 const FeaturesSection = React.memo(() => {
     const [messages, setMessages] = React.useState([]);
-    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
-
-    useEffect(() => {
-        const handleResize = () => setIsMobileView(window.innerWidth < 1024);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const { isMobile } = useDevice();
 
     React.useEffect(() => {
         const chatFlow = [
@@ -832,7 +498,7 @@ const FeaturesSection = React.memo(() => {
         </motion.div>
     );
     
-    const featuresLayoutDyn = isMobileView ? {...styles.featuresSection, gridTemplateColumns: '1fr', gap: '2rem'} : styles.featuresSection;
+    const featuresLayoutDyn = isMobile ? {...styles.featuresSection, gridTemplateColumns: '1fr', gap: '2rem'} : styles.featuresSection;
 
     return (
         <section style={{padding: '4rem 1rem'}}>
@@ -874,7 +540,6 @@ const FeaturesSection = React.memo(() => {
     );
 });
 
-
 const InstallationGuide = () => {
     const [platform, setPlatform] = useState('pc'); // 'pc' или 'mobile'
     const [browser, setBrowser] = useState('chrome'); // 'chrome', 'yandex', 'edge', 'safari'
@@ -915,13 +580,7 @@ const InstallationGuide = () => {
         }
     };
     
-    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-
-    useEffect(() => {
-        const handleResize = () => setIsMobileView(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const { isMobile } = useDevice();
 
     const availableBrowsers = platform === 'pc' ? ['chrome', 'yandex', 'edge'] : ['chrome', 'safari'];
     
@@ -931,7 +590,7 @@ const InstallationGuide = () => {
         }
     }, [platform, browser, availableBrowsers]);
 
-    const installationLayoutDyn = isMobileView ? {...styles.installationLayout, gridTemplateColumns: '1fr', gap: '2rem'} : styles.installationLayout;
+    const installationLayoutDyn = isMobile ? {...styles.installationLayout, gridTemplateColumns: '1fr', gap: '2rem'} : styles.installationLayout;
 
     return (
         <section style={styles.installationSection}>
@@ -1000,7 +659,6 @@ const InstallationGuide = () => {
     );
 };
 
-
 const NewsSection = () => {
     const sliderRef = useRef(null);
     const newsData = useMemo(() => [
@@ -1035,17 +693,11 @@ const NewsSection = () => {
     );
 };
 
-
 const Footer = React.memo(() => {
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
-    useEffect(() => {
-        const handleResize = () => setIsDesktop(window.innerWidth > 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const { isMobile } = useDevice();
 
-    const footerGridStyle = { ...styles.footerGrid, gridTemplateColumns: isDesktop ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)' };
-    const footerBottomStyle = { ...styles.footerBottom, flexDirection: isDesktop ? 'row' : 'column', gap: isDesktop ? 0 : '1rem' };
+    const footerGridStyle = { ...styles.footerGrid, gridTemplateColumns: !isMobile ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)' };
+    const footerBottomStyle = { ...styles.footerBottom, flexDirection: !isMobile ? 'row' : 'column', gap: !isMobile ? 0 : '1rem' };
     
     return (
         <footer style={styles.footer}>
@@ -1057,313 +709,59 @@ const Footer = React.memo(() => {
             </div>
             <div style={footerBottomStyle}>
                 <p>&copy; {new Date().getFullYear()} sYnask. Все права защищены.</p>
-                <div style={{ display: 'flex', gap: '1rem', marginTop: isDesktop ? 0 : '1rem' }}><a href="#" style={styles.footerLink}>Политика конфиденциальности</a><a href="#" style={styles.footerLink}>Условия использования</a></div>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: !isMobile ? 0 : '1rem' }}><a href="#" style={styles.footerLink}>Политика конфиденциальности</a><a href="#" style={styles.footerLink}>Условия использования</a></div>
             </div>
         </footer>
     );
 });
 
 const IntroSection = () => {
-    // Адаптивность
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 900);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const headerHeight = 80;
-    const sectionHeight = `calc(100vh - ${headerHeight}px)`;
-
-    // Стили
-    const introStyles = {
-        // Общий контейнер секции
-        sectionContainer: {
-            position: 'relative',
-            alignItems: 'center',
-            padding: isMobile ? 0 : '2rem 1rem 0 1rem', // Добавим отступ сверху
-        },
-        // Заголовок, вынесенный наверх
-        mainTitle: {
-            fontSize: isMobile ? '2.5rem' : '3.2rem',
-            fontWeight: 800,
-            textAlign: 'center',
-            background: 'linear-gradient(90deg, #FB923C, #C084FC)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '2.5rem', // Отступ после заголовка
-            maxWidth: '1280px',
-            width: '100%',
-        },
-        // Основная обертка для контента (история + маскот)
-        wrapper: {
-            position: 'relative',
-            width: '100%',
-            maxWidth: isMobile ? 'none' : 'calc(100vw - 60px)',
-            margin: '0 auto',
-            zIndex: 20,
-            borderRadius: '2rem 2rem 0 0',
-            boxShadow: '0 0 80px 40px rgba(249,115,22,0.18), 0 0 120px 60px rgba(168,85,247,0.12)',
-            background: 'rgba(25, 22, 47, 0.85)',
-            overflow: 'hidden', // Меняем на hidden, чтобы обрезать маскота
-            borderBottomRightRadius: 0,
-            borderBottomLeftRadius: 0,
-            backdropFilter: 'blur(10px)',
-        },
-        // Левая часть с текстом истории
-        left: {
-            flex: 1.2, // Дадим чуть больше места тексту
-            padding: isMobile ? '2rem 1.5rem' : '3.5rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            paddingTop: 0,
-        },
-        // Правая часть с маскотом
-        right: {
-            flex: 0.8, // Меньше места для маскота
-            position: 'relative', // Для позиционирования маскота
-            minHeight: isMobile ? '300px' : 'auto', // Минимальная высота на мобильных
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        // Текст истории
-        storyText: {
-            color: '#D1D5DB',
-            fontSize: isMobile ? '1rem' : '1.1rem',
-            lineHeight: 1.7,
-            maxWidth: '550px', // Ограничим ширину текста для читаемости
-        },
-        // Стили для маскота
-        mascot: {
-            position: 'absolute',
-            bottom: isMobile ? '-40px' : '-60px',   // Выглядывает снизу
-            right: isMobile ? '-50px' : '-80px',   // Выглядывает справа
-            width: isMobile ? '280px' : '450px',    // Размер маскота
-            height: 'auto',
-            pointerEvents: 'none', // Чтобы не мешал кликам
-            transition: 'transform 0.3s ease-out',
-        },
-        // Стрелка (если понадобится)
-        arrow: {
-            position: 'absolute',
-            bottom: '120px',
-            right: '280px',
-            width: '100px',
-            transform: 'rotate(-25deg)',
-            opacity: 0.7
-        },
-
-        appContainer: {
-            backgroundColor: '#000',
-            color: '#fff',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        },
-        header: { 
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            zIndex: 50,
-            transition: 'background-color 0.3s ease, border-color 0.3s ease', 
-        },
-        headerContent: {
-            maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', display: 'flex',
-            alignItems: 'center', justifyContent: 'space-between', height: '5rem',
-        },
-        logo: {
-            flexShrink: 0, fontWeight: 'bold', fontSize: '1.875rem', letterSpacing: '0.05em',
-            display: 'flex', alignItems: 'center', gap: '0.75rem', 
-        },
-        nav: { alignItems: 'center', gap: '1rem' },
-        navLink: {
-            color: '#D1D5DB', transition: 'color 0.2s', padding: '0.5rem 0.75rem', borderRadius: '0.375rem',
-            textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '0.25rem',
-        },
-        navButton: {
-            background: 'linear-gradient(to right, #F97316, #A855F7)', color: 'white', fontWeight: 'bold',
-            padding: '0.5rem 1.25rem', borderRadius: '0.5rem', transition: 'all 0.3s',
-            border: 'none', cursor: 'pointer', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.2)',
-        },
-        heroSection: {
-            height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', textAlign: 'center', padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-        },
-        heroContentWrapper: { 
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-        },
-        badgesContainer: {
-            display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem',
-        },
-        badge: {
-            fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.75rem', borderRadius: '9999px',
-        },
-        heroTitle: {
-            fontSize: 'clamp(2.5rem, 5vw + 1rem, 3.75rem)', fontWeight: 800, marginBottom: '1rem',
-            background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-        },
-        sectionTitle: { 
-            fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, marginBottom: '1rem',
-            background: 'linear-gradient(to right, #FB923C, #C084FC)', WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent', textAlign: 'center',
-        },
-        sectionSubtitle: { 
-            marginBottom: '3rem', fontSize: '1.125rem', color: '#9CA3AF',
-            maxWidth: '48rem', textAlign: 'center', margin: '0 auto 3rem auto',
-        },
-        heroSubtitle: {
-            marginBottom: '2rem', fontSize: '1.125rem', color: '#9CA3AF', maxWidth: '42rem',
-        },
-        emailForm: { width: '100%', maxWidth: '28rem' },
-        emailInputContainer: {
-            display: 'flex', alignItems: 'center', backgroundColor: 'rgba(17, 24, 39, 0.5)',
-            border: '1px solid rgba(168, 85, 247, 0.5)', borderRadius: '0.5rem',
-            padding: '0.5rem', backdropFilter: 'blur(4px)',
-        },
-        emailInput: {
-            appearance: 'none', backgroundColor: 'transparent', border: 'none',
-            width: '100%', color: 'white', marginRight: '0.75rem', padding: '0.5rem',
-            lineHeight: '1.5',
-        },
-        pageContent: {
-            position: 'relative',
-            zIndex: 30, 
-        },
-        glassPane: {
-            position: 'relative',
-            zIndex: 10,
-            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-            backgroundColor: 'rgba(25, 22, 47, 0.94)',
-            backdropFilter: 'blur(12px) saturate(150%)',
-            borderBottom: '1px solid rgba(187, 0, 255, 0.37)',
-            borderTop: '1px solid rgba(187, 0, 255, 0.37)',
-            borderRadius: '1.5rem',
-            padding: '2rem',
-            margin: '0 auto',
-            width: '100vw',
-            borderTopRightRadius: 0,
-            borderTopLeftRadius: 0,
-        },
-    };
+    const { isMobile } = useDevice();
 
     return (
-        <section style={introStyles.sectionContainer}>
-            {/* 1. ЗАГОЛОВОК ВО ВСЮ ШИРИНУ */}
-
-            <div style={introStyles.wrapper}>
-                {/* 2. ЛЕВАЯ ЧАСТЬ: ИСТОРИЯ В ВИДЕ ТЕКСТА */}
-                <h2 style={introStyles.mainTitle}>
+        <section style={styles.introSectionContainer(isMobile)}>
+            <div style={styles.introWrapper(isMobile)}>
+                <h2 style={styles.introMainTitle(isMobile)}>
                     История нашего возрождения
                 </h2>
-                <div style={introStyles.left}>
-                    <p style={introStyles.storyText}>
-                        Путь sYnask начался в <strong>марте 2022 года</strong>, когда родилась сама идея проекта. 
-                        Мы загорелись желанием создать нечто новое, и уже к <strong>июлю</strong> того же года приступили к активной разработке первого прототипа. 
-                        <br/><br/>
-                        <strong>Январь 2023</strong> стал для нас важной вехой — мы провели первые успешные тесты нашего AI. 
-                        Осенью, в <strong>октябре 2023</strong>, мы запустили закрытое бета-тестирование, чтобы получить ценную обратную связь. 
-                        <br/><br/>
-                        И вот, в <strong>мае 2024 года</strong>, состоялся долгожданный публичный релиз. 
-                        Сегодня, в <strong>июне 2025</strong>, мы с гордостью представляем вам мощного AI-помощника и множество новых функций, продолжая наш путь инноваций. Это наш Феникс — символ вечного обновления и возрождения идей.
-                    </p>
-                </div>
-                
-                {/* 3. ПРАВАЯ ЧАСТЬ: МАСКОТ */}
-                <div style={introStyles.right}>
-                    <motion.img
-                        src="https://i.ibb.co/N2mVtYpB/18-20250531132732.png"
-                        alt="Маскот Феникс"
-                        style={{
-                            ...introStyles.mascot,
-
-                        }}
-                        initial={{ x: 100, y: 100, opacity: 0, scale: 0.92, rotate: 8 }}
-                        animate={{ x: 0, y: 0, opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                    {/* При желании можно раскомментировать и стилизовать стрелку */}
-                    {/* <img src="https://example.com/arrow.svg" alt="Стрелка" style={introStyles.arrow} /> */}
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+                    {/* 2. ЛЕВАЯ ЧАСТЬ: ИСТОРИЯ В ВИДЕ ТЕКСТА */}
+                    <div style={styles.introLeft(isMobile)}>
+                        <p style={styles.introStoryText(isMobile)}>
+                            Путь sYnask начался в <strong>марте 2022 года</strong>, когда родилась сама идея проекта. 
+                            Мы загорелись желанием создать нечто новое, и уже к <strong>июлю</strong> того же года приступили к активной разработке первого прототипа. 
+                            <br/><br/>
+                            <strong>Январь 2023</strong> стал для нас важной вехой — мы провели первые успешные тесты нашего AI. 
+                            Осенью, в <strong>октябре 2023</strong>, мы запустили закрытое бета-тестирование, чтобы получить ценную обратную связь. 
+                            <br/><br/>
+                            И вот, в <strong>мае 2024 года</strong>, состоялся долгожданный публичный релиз. 
+                            Сегодня, в <strong>июне 2025</strong>, мы с гордостью представляем вам мощного AI-помощника и множество новых функций, продолжая наш путь инноваций. Это наш Феникс — символ вечного обновления и возрождения идей.
+                        </p>
+                    </div>
+                    
+                    {/* 3. ПРАВАЯ ЧАСТЬ: МАСКОТ */}
+                    <div style={styles.introRight(isMobile)}>
+                        <motion.img
+                            src="https://i.ibb.co/N2mVtYpB/18-20250531132732.png"
+                            alt="Маскот Феникс"
+                            style={styles.introMascot(isMobile)}
+                            initial={{ x: 100, y: 100, opacity: 0, scale: 0.92, rotate: 8 }}
+                            animate={{ x: 0, y: 0, opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                        />
+                        {/* При желании можно раскомментировать и стилизовать стрелку */}
+                        {/* <img src="https://example.com/arrow.svg" alt="Стрелка" style={styles.introArrow} /> */}
+                    </div>
                 </div>
             </div>
         </section>
     );
 };
 
-// --- TimelineDiagram ---
-const TimelineDiagram = ({ points, isMobile }) => {
-    // SVG диаграмма с ломаной и остановками
-    const width = isMobile ? 280 : 320;
-    const height = isMobile ? 220 : 320;
-    const margin = 32;
-    const stepY = (height - 2 * margin) / (points.length - 1);
-    return (
-        <svg width={width} height={height} style={{ overflow: 'visible' }}>
-            {/* Ломаная линия */}
-            <polyline
-                fill="none"
-                stroke="url(#timelineGradient)"
-                strokeWidth={5}
-                points={points.map((p, i) => `${width / 2},${margin + i * stepY}`).join(' ')}
-            />
-            <defs>
-                <linearGradient id="timelineGradient" x1="0" y1="0" x2="0" y2={height} gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#F97316" />
-                    <stop offset="100%" stopColor="#A855F7" />
-                </linearGradient>
-            </defs>
-            {/* Остановки */}
-            {points.map((p, i) => (
-                <g key={i}>
-                    <circle
-                        cx={width / 2}
-                        cy={margin + i * stepY}
-                        r={isMobile ? 13 : 16}
-                        fill={p.color}
-                        opacity={0.18}
-                    />
-                    <circle
-                        cx={width / 2}
-                        cy={margin + i * stepY}
-                        r={isMobile ? 7 : 9}
-                        fill={p.color}
-                        stroke="#fff"
-                        strokeWidth={2}
-                    />
-                    <text
-                        x={width / 2 + (isMobile ? 18 : 24)}
-                        y={margin + i * stepY + 5}
-                        fontSize={isMobile ? 13 : 15}
-                        fill="#fff"
-                        style={{ fontWeight: 600 }}
-                    >
-                        {p.year}, {p.month}
-                    </text>
-                    <text
-                        x={width / 2 + (isMobile ? 18 : 24)}
-                        y={margin + i * stepY + (isMobile ? 22 : 26)}
-                        fontSize={isMobile ? 12 : 14}
-                        fill="#C084FC"
-                    >
-                        {p.label}
-                    </text>
-                </g>
-            ))}
-        </svg>
-    );
-};
 
-// --- ОСНОВНОЙ КОМПОНЕНТ СТРАНИЦЫ ---
 export default function App() {
     const [email, setEmail] = useState('');
-    const badgeStatusStyle = { ...styles.badge, backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#4ADE80' };
-    const badgeVersionStyle = { ...styles.badge, backgroundColor: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', color: '#C084FC' };
-    const badgeUsersStyle = { ...styles.badge, backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', color: '#93C5FD' };
+    const { isMobile } = useDevice();
 
     // --- Логика для анимации скролла ---
     const mainRef = useRef(null);
@@ -1376,26 +774,28 @@ export default function App() {
     const heroScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.85]);
 
     return (
+        // Убедитесь, что стиль styles.appContainer определен
         <div style={styles.appContainer}>
             <ParticlesBackground />
             <Header />
             <main ref={mainRef}>
-                <section style={styles.heroSection}>
+                <section style={styles.heroSection(isMobile)}> 
                     <motion.div 
                         style={{...styles.heroContentWrapper, opacity: heroOpacity, scale: heroScale}}
                     >
+                        {/* 1. Шилдики */}
                         <div style={styles.badgesContainer}>
-                            <div style={badgeStatusStyle}>Статус: Online</div>
-                            <div style={badgeVersionStyle}>Версия: 0.7.1-scroll</div>
-                            <div style={badgeUsersStyle}>Пользователей: 3,102</div>
+                            <div style={styles.badgeStatus}>Статус: Online</div>
+                            <div style={styles.badgeVersion}>Версия: 0.7.1-scroll</div>
+                            <div style={styles.badgeUsers}>Пользователей: 3,102</div>
                         </div>
 
-                        <h1 style={styles.heroTitle}>
+                        {/* 2. Заголовок */}
+                        <h1 style={styles.heroTitle(isMobile)}>
                             Войдите в будущее
                         </h1>
-                        <p style={styles.heroSubtitle}>
-                            Алгоритмы — под контролем. Ты — в фокусе.
-                        </p>
+
+                        {/* 3. Форма ввода (переехала вверх) */}
                         <form
                             style={styles.emailForm}
                             onSubmit={(e) => e.preventDefault()}
@@ -1408,12 +808,18 @@ export default function App() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
+                                {/* Убедитесь, что стиль styles.navButton определен */}
                                 <button style={styles.navButton} type="submit">Продолжить</button>
                             </div>
                         </form>
+                        
+                        {/* 4. Описание (переехало вниз) */}
+                        <p style={styles.heroSubtitle(isMobile)}>
+                            Алгоритмы — под контролем. Ты — в фокусе.
+                        </p>
+
                     </motion.div>
                 </section>
-                {/* --- IntroSection с историей и диаграммой --- */}
                 <IntroSection />
                 <div style={styles.pageContent}>
                     <div style={styles.glassPane}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import MainPage from '../pages/MainPage';
+import MainPage from '../pages/WelcomePage/WelcomePage';
 
 const PocketApp = () => {
     return (
