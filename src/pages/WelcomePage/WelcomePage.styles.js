@@ -18,28 +18,33 @@ const styles = {
         borderBottom: '1px solid rgba(187, 0, 255, 0.37)',
         borderTop: '1px solid rgba(187, 0, 255, 0.37)',
         borderRadius: '1.5rem',
-        padding: '2rem',
         margin: '0 auto',
-        maxWidth: '100vw',
+        width: '100vw',
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0,
     },
-    sectionTitle: { 
+    sectionTitle: {
         fontSize: 'clamp(2rem, 4vw, 3rem)',
         fontWeight: 800,
-        marginBottom: '1rem',
         background: 'linear-gradient(to right, #FB923C, #C084FC)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
         textAlign: 'center',
+        margin: 0,
     },
     sectionSubtitle: {
         fontSize: '1.125rem',
         color: '#9CA3AF',
         maxWidth: '48rem',
         textAlign: 'center',
-        margin: '0 auto 3rem',
+        margin: '0 auto',
     },
+
+    sectionBlock: (isMobile) => ({
+        height: 'calc(100vh - 80px)',
+        marginTop: '50px',
+        padding: isMobile ? '5px' : '20px'
+    }),
 
     // -- ХЕДЕР (HEADER) --
     header: {
@@ -230,7 +235,6 @@ const styles = {
         paddingBottom: '1rem', // Добавим небольшой нижний отступ для всех
     }),
 
-    // -- ЗАГОЛОВОК --
     heroTitle: (isMobile) => ({
         fontWeight: 800,
         background: 'linear-gradient(to right, #FB923C, #C084FC)',
@@ -243,15 +247,13 @@ const styles = {
         whiteSpace: isMobile ? 'nowrap' : 'normal',
     }),
 
-    // -- ПОДЗАГОЛОВОК --
     heroSubtitle: (isMobile) => ({
         fontSize: '1.125rem',
         color: '#9CA3AF',
         maxWidth: '42rem',
         textAlign: 'center',
         // Отступы меняются из-за смены порядка блоков на мобильных
-        marginTop: isMobile ? '1.5rem' : 0,
-        marginBottom: isMobile ? 0 : '2rem',
+        marginTop: '1.5rem'
     }),
     heroContentWrapper: {
         display: 'flex',
@@ -436,7 +438,6 @@ const styles = {
     },
     aiChatContainer: {
         maxWidth: '48rem',
-        width: '100%', // Добавлено для отзывчивости
         backgroundColor: 'rgba(17, 24, 39, 0.5)',
         border: '1px solid rgba(168, 85, 247, 0.5)',
         borderRadius: '1rem',
@@ -479,41 +480,192 @@ const styles = {
         borderRadius: '50%'
     },
 
-    // -- СЕКЦИЯ ВОЗМОЖНОСТЕЙ (FEATURES) И АККОРДЕОН --
-    featuresSection: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr', // Динамически меняется в компоненте
-        gap: '3rem',
-        alignItems: 'center',
+    // -- НОВЫЕ СТИЛИ ДЛЯ ЗВЕЗДЫ И ОБНОВЛЕННЫЕ СТИЛИ --
+    featuresSectionWrapper: {
+        position: 'relative',
+        height: '300vh',
+        marginTop: '50px',
     },
-    featuresDescription: {
+    // -- ИЗМЕНЕНО: Добавлены отступы, gap и выравнивание по верху --
+    stickyContainer: (isMobile) => ({
+        position: 'sticky',
+        top: '0', // Прилипает к самому верху
+        height: 'calc(100vh - 80px - 1.5rem', // Занимает всю высоту экрана
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        gap: '1.5rem'
-    },
-    accordionItem: {
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '0.75rem',
-        backgroundColor: 'rgba(0,0,0,0.2)',
-    },
-    accordionHeader: {
-        padding: '1rem 1.5rem',
-        cursor: 'pointer',
-        display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start', // Выравниваем контент по верху
         alignItems: 'center',
-        fontWeight: 600,
-        fontSize: '1.125rem',
-        color: 'white',
+        padding: isMobile ? '80px 3rem' : '80px 1.5rem', // Отступы сверху/снизу и по бокам для всего блока
+        gap: '1.5rem', // Расстояние между заголовками и сеткой фич
+    }),
+    sectionHeader: {
+        textAlign: 'center',
+        color: '#FFFFFF',
     },
-    accordionContent: {
-        overflow: 'hidden'
+    // -- ИЗМЕНЕНО: Позиция звезды скорректирована относительно нового родителя --
+    shootingStarContainer: {
+        position: 'absolute',
+        top: '-40px',   // Выносим немного выше блока с текстом
+        left: '-30px',  // и левее
+        width: '150px',
+        height: '80px',
+        transform: 'rotate(-25deg)', // Скорректирован угол
+        transition: 'transform 0.3s ease-in-out',
+        pointerEvents: 'none',
     },
-    accordionText: {
-        padding: '0 1.5rem 1.5rem 1.5rem',
+    star: {
+        /* ... стили звезды остаются прежними ... */
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '12px',
+        height: '12px',
+        backgroundColor: '#F0E6FF',
+        borderRadius: '50%',
+        animation: 'flicker 2s infinite ease-in-out',
+        transition: 'all 0.3s ease-in-out',
+        pointerEvents: 'auto',
+        cursor: 'pointer',
+    },
+    starTrail: {
+        /* ... стили хвоста остаются прежними ... */
+        position: 'absolute',
+        top: '6px',
+        left: '6px',
+        width: '150px',
+        height: '2px',
+        background: 'linear-gradient(to right, rgba(168, 85, 247, 0.8), transparent)',
+        borderRadius: '50%',
+        animation: 'trail-shimmer 2s infinite ease-in-out',
+        transition: 'all 0.3s ease-in-out',
+        pointerEvents: 'none',
+    },
+    // -- НОВОЕ: Стили для ховер-эффекта звезды --
+    starHover: {
+        transform: 'scale(1.3)',
+        boxShadow: '0 0 20px #C4B5FD, 0 0 35px #C4B5FD, 0 0 50px #C4B5FD',
+    },
+    starTrailHover: {
+        opacity: '1',
+        background: 'linear-gradient(to right, rgba(196, 181, 253, 1), transparent)',
+    },
+    scrollContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        scrollSnapType: 'y mandatory',
+        overflowY: 'auto',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+    },
+    'scrollContainer::-webkit-scrollbar': {
+        display: 'none',
+    },
+    scrollSnapSection: {
+        height: '100vh',
+        scrollSnapAlign: 'start',
+    },
+    // -- ИЗМЕНЕНО: Добавлены отступы для мобильных и для демо-блока --
+    featuresGrid: (isMobile) => ({
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+        gridTemplateRows: isMobile ? 'auto 1fr' : '1fr',
+        gap: '3rem',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: '72rem',
+        flex: 1, // Позволяет сетке занять оставшееся место по высоте
+        minHeight: 0, // Важно для корректной работы flex: 1 в некоторых браузерах
+    }),
+    // -- ИЗМЕНЕНО: Добавлен position: 'relative' для корректного позиционирования звезды --
+    featuresDescriptionContainer: (isMobile) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: '1.5rem',
+        height: isMobile ? '300px' : '100%', // Увеличена высота для лучшего вида
+        position: 'relative', // Обязательно для дочерней звезды
+    }),
+    featuresTextWrapper: {
+        transition: 'transform 0.1s linear',
+    },
+    featureTextItem: (isActive) => ({
+        opacity: isActive ? 1 : 0,
+        transform: isActive ? 'translateY(0)' : 'translateY(-50px)',
+        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+    }),
+    // -- ИЗМЕНЕНО: Заголовок стал более заметным --
+    featureTitle: {
+        fontSize: 'clamp(2rem, 4vw, 3rem)', // Увеличен размер
+        fontWeight: 800,     // Увеличена жирность
+        lineHeight: 1.2,
+        // Эффект градиента для текста
+        background: 'linear-gradient(90deg, #E2D2FF, #A855F7)',
+        WebkitBackgroundClip: 'text',
+        color: 'transparent',
+        backgroundClip: 'text',
+        textShadow: '0 0 25px rgba(168, 85, 247, 0.3)', // Легкая тень
+        marginBottom: '1.5rem',
+    },
+    // -- ИЗМЕНЕНО: Описание стало более читабельным --
+    featureDescriptionText: {
+        fontSize: 'clamp(1rem, 2vw, 1.5rem)',   // Немного увеличен размер
+        color: '#E5E7EB',      // Слегка светлее для контраста
+        lineHeight: 1.7,       // Увеличен межстрочный интервал
+    },
+    pagination: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '0.75rem',
+        position: 'absolute',
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+    },
+    paginationDot: (isActive) => ({
+        width: '10px',
+        height: '10px',
+        borderRadius: '50%',
+        backgroundColor: isActive ? '#A855F7' : '#4B5563',
+        transition: 'background-color 0.3s ease',
+    }),
+    featuresDemoContainer: {
+        position: 'relative',
+        height: '100%',
+        width: '100%',
+        minHeight: isMobile => isMobile ? '300px' : '500px', // Увеличена высота демо
+    },
+    featureDemoItem: (isActive) => ({
+        position: 'absolute',
+        inset: 0,
+        opacity: isActive ? 1 : 0,
+        transform: isActive ? 'translateY(0)' : 'translateY(50px)',
+        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }),
+    demoPlaceholder: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(30, 30, 50, 0.5)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '1rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1.25rem',
         color: '#D1D5DB',
-        lineHeight: 1.6
+        backdropFilter: 'blur(5px)',
     },
+
 
     // -- СЕКЦИЯ УСТАНОВКИ (INSTALLATION GUIDE) --
     installationSection: {

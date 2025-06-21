@@ -373,6 +373,14 @@ const PhoneFeedSection = () => {
                         {posts.map((post) => <Post key={post.id} post={post} />)}
                     </motion.div>
                 </div>
+                {/*<div style={styles.rightMenuContainer}>
+                    <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+                        Наш AI всегда на связи
+                    </motion.h2>
+                </div>
+            </div>
+            <div style={styles.descriptionSuperFunction}>
+                <a>привет</a>*/}
             </div>
         </section>
     );
@@ -469,76 +477,177 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
     );
 };
 
-const FeaturesSection = React.memo(() => {
-    const [messages, setMessages] = React.useState([]);
-    const { isMobile } = useDevice();
+const featuresData = [
+    {
+        title: 'Инструменты для авторов',
+        description: 'Предоставляем мощные и удобные инструменты, которые помогут вам создавать уникальный контент, анализировать аудиторию и монетизировать свое творчество.',
+        demoComponent: <div style={styles.demoPlaceholder}>Демонстрация инструментов</div>
+    },
+    {
+        title: 'Защита авторских прав',
+        description: 'Наша система автоматически отслеживает и защищает ваши авторские права, предотвращая несанкционированное использование вашего контента.',
+        demoComponent: <div style={styles.demoPlaceholder}>Демонстрация защиты</div>
+    },
+    {
+        title: 'Приватность и безопасность',
+        description: 'Мы гарантируем высокий уровень приватности ваших данных и безопасность вашего аккаунта с помощью современных технологий шифрования и аутентификации.',
+        demoComponent: <div style={styles.demoPlaceholder}>Демонстрация безопасности</div>
+    }
+];
 
-    React.useEffect(() => {
-        const chatFlow = [
-            () => setMessages([{ type: 'user', text: 'Какие у тебя есть инструменты для авторов?' }]),
-            () => setMessages(prev => [...prev, { type: 'typing' }]),
-            () => setMessages(prev => [
-                ...prev.filter(m => m.type !== 'typing'),
-                { type: 'ai', text: 'Я могу помочь с генерацией идей для постов, написать текст в любом стиле, создать уникальные изображения и даже проверить факты. А наш редактор — это настоящее графическое полотно для вашего творчества!' }
-            ])
-        ];
-
-        const timer1 = setTimeout(chatFlow[0], 500);
-        const timer2 = setTimeout(chatFlow[1], 1800);
-        const timer3 = setTimeout(chatFlow[2], 5000);
-
-        return () => { clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); }
-    }, []);
-
-    const TypingIndicator = () => (
-        <motion.div style={styles.typingIndicatorContainer} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0 }} />
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }} />
-            <motion.span style={styles.typingDot} animate={{ y: [0, -4, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} />
-        </motion.div>
-    );
-    
-    const featuresLayoutDyn = isMobile ? {...styles.featuresSection, gridTemplateColumns: '1fr', gap: '2rem'} : styles.featuresSection;
+const ShootingStar = () => {
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <section style={{padding: '4rem 1rem'}}>
-            <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
-                Платформа нового поколения
-            </motion.h2>
-            <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
-                sYnask — это не просто соцсеть. Это экосистема для творчества, общения и безопасности, созданная с помощью передовых технологий.
-            </motion.p>
-            <div style={featuresLayoutDyn}>
-                <div style={styles.featuresDescription}>
-                   <Accordion title="Инструменты для авторов" defaultOpen={true}>
-                       Мы предоставляем авторам мощные AI-функции и уникальный редактор постов. Представьте себе не просто текстовое поле, а безграничное графическое полотно, где вы можете комбинировать текст, изображения, видео и интерактивные элементы. Наш AI поможет сгенерировать контент, найти вдохновение и даже дописать за вас текст.
-                   </Accordion>
-                   <Accordion title="Защита авторских прав">
-                       Ваш контент — ваша собственность. Мы разрабатываем систему на основе блокчейн-технологий, которая закрепляет авторство за создателем. Каждая уникальная работа получает цифровой сертификат, который невозможно подделать. Это как NFT, но создано специально для защиты интеллектуальной собственности в социальной сети.
-                   </Accordion>
-                    <Accordion title="Приватность и безопасность">
-                        Все ваши личные переписки защищены сквозным шифрованием (E2E). Это значит, что никто, даже мы, не может получить доступ к их содержанию. Ваша приватность — наш абсолютный приоритет.
-                    </Accordion>
+        <div style={styles.shootingStarContainer}>
+            <div
+                style={{ ...styles.star, ...(isHovered ? styles.starHover : {}) }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            />
+            <div style={{ ...styles.starTrail, ...(isHovered ? styles.starTrailHover : {}) }} />
+        </div>
+    );
+};
+
+const FeaturesSection = () => {
+    const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+    // Вместо window.innerWidth можно использовать хук useDevice(), как вы и предлагали.
+    // Я оставлю логику с window.innerWidth для примера, как в исходном коде.
+    const { isMobile } = useDevice();
+    
+    const scrollContainerRef = useRef(null);
+    const textContainerRef = useRef(null);
+    const sectionRefs = useRef([]);
+
+    // ... (остальные хуки useEffect остаются без изменений)
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        const handleReverseScroll = () => {
+            if (textContainerRef.current) {
+                const scrollHeight = container.scrollHeight - container.clientHeight;
+                const scrollTop = container.scrollTop;
+                const scrollPercentage = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+                textContainerRef.current.style.transform = `translateY(${scrollPercentage * 30}px)`;
+            }
+        };
+        container.addEventListener('scroll', handleReverseScroll);
+        return () => container.removeEventListener('scroll', handleReverseScroll);
+    }, []);
+
+    useEffect(() => {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.6
+        };
+
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const index = parseInt(entry.target.dataset.index, 10);
+                    setCurrentFeatureIndex(index);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        const refs = sectionRefs.current;
+        refs.forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            refs.forEach(ref => {
+                if (ref) observer.unobserve(ref);
+            });
+        };
+    }, []);
+
+    return (
+        <section style={styles.featuresSectionWrapper}>
+            {/* -- НОВОЕ: Вставляем CSS keyframes -- */}
+            <style>
+                {`
+                    @keyframes flicker {
+                      0%, 100% { opacity: 0.8; box-shadow: 0 0 10px #A855F7, 0 0 20px #A855F7, 0 0 30px #A855F7; }
+                      50% { opacity: 1; box-shadow: 0 0 15px #C4B5FD, 0 0 25px #C4B5FD, 0 0 40px #C4B5FD; }
+                    }
+                    @keyframes trail-shimmer {
+                      0%, 100% { opacity: 0.7; }
+                      50% { opacity: 1; }
+                    }
+                `}
+            </style>
+
+            {/* -- ИЗМЕНЕНО: Вся видимая часть теперь обернута в stickyContainer -- */}
+            <div style={styles.stickyContainer(isMobile)}>
+                
+                {/* -- НОВОЕ: Возвращаем заголовки -- */}
+                <motion.h2 style={styles.sectionTitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }}>
+                Возможности
+                </motion.h2>
+                <motion.p style={styles.sectionSubtitle} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5, delay: 0.2 }}>
+                То, за что нас полюбили
+                </motion.p>
+
+                {/* Сетка с фичами теперь идет после заголовков */}
+                <div style={styles.featuresGrid(isMobile)}>
+                    {/* Левая часть - Описание */}
+                    <div style={styles.featuresDescriptionContainer(isMobile)}>
+                        {/* Звезда, как вы и разместили, внутри блока с описанием */}
+                        {!isMobile && <ShootingStar />}
+                        
+                        <div ref={textContainerRef} style={styles.featuresTextWrapper}>
+                            {featuresData.map((feature, index) => (
+                                <div
+                                    key={index}
+                                    style={styles.featureTextItem(index === currentFeatureIndex)}
+                                >
+                                    <h3 style={styles.featureTitle}>{feature.title}</h3>
+                                    <p style={styles.featureDescriptionText}>{feature.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={styles.pagination}>
+                            {featuresData.map((_, index) => (
+                                <div
+                                    key={index}
+                                    style={styles.paginationDot(index === currentFeatureIndex)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Правая часть - Демонстрация */}
+                    <div style={styles.featuresDemoContainer}>
+                        {featuresData.map((feature, index) => (
+                            <div
+                                key={index}
+                                style={styles.featureDemoItem(index === currentFeatureIndex)}
+                            >
+                                {feature.demoComponent}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <motion.div style={styles.aiChatContainer} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.3 }}>
-                    <AnimatePresence>
-                        {messages.map((msg, index) => {
-                            if (msg.type === 'typing') { return <TypingIndicator key="typing" />; }
-                            return (
-                                <motion.div key={index}
-                                    style={msg.type === 'user' ? { ...styles.messageBubble, ...styles.userMessage } : { ...styles.messageBubble, ...styles.aiMessage }}
-                                    initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0 }} layout >
-                                    {msg.text}
-                                </motion.div>
-                            );
-                        })}
-                    </AnimatePresence>
-                </motion.div>
+            </div>
+
+            {/* Невидимый скролл-контейнер остается без изменений */}
+            <div ref={scrollContainerRef} style={styles.scrollContainer}>
+                {featuresData.map((_, index) => (
+                    <div
+                        key={index}
+                        ref={el => sectionRefs.current[index] = el}
+                        style={styles.scrollSnapSection}
+                        data-index={index}
+                    />
+                ))}
             </div>
         </section>
     );
-});
+};
 
 const InstallationGuide = () => {
     const [platform, setPlatform] = useState('pc'); // 'pc' или 'mobile'
