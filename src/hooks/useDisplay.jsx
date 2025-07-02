@@ -4,7 +4,7 @@ import React, { useState, useEffect, createContext, useContext } from 'react';
 const DeviceContext = createContext(null);
 const MOBILE_BREAKPOINT = 768;
 
-export const DeviceProvider = ({ children }) => {
+export const DisplayProvider = ({ children }) => {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

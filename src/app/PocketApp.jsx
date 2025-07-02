@@ -1,12 +1,9 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import MainPage from '../pages/WelcomePage/WelcomePage';
+import DevicesRoutes from './routes/DevicesRouter';
 
 const PocketApp = () => {
     return (
-        <Routes>
-            <Route path="/" element={<MainPage />} />
-        </Routes>
+        <DevicesRoutes></DevicesRoutes>
     )
 }
 

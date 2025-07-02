@@ -19,7 +19,7 @@ const styles = {
         borderTop: '1px solid rgba(187, 0, 255, 0.37)',
         borderRadius: '1.5rem',
         margin: '0 auto',
-        width: '100vw',
+        width: '100%',
         borderTopRightRadius: 0,
         borderTopLeftRadius: 0,
     },
@@ -160,6 +160,10 @@ const styles = {
         marginBottom: '2.5rem',
         maxWidth: '1280px',
         width: '100%',
+        margin: 0,
+        marginTop: '11px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
     }),
     introWrapper: (isMobile) => ({
         position: 'relative',
@@ -484,7 +488,6 @@ const styles = {
     featuresSectionWrapper: {
         position: 'relative',
         height: '300vh',
-        marginTop: '50px',
     },
     // -- ИЗМЕНЕНО: Добавлены отступы, gap и выравнивание по верху --
     stickyContainer: (isMobile) => ({
@@ -496,7 +499,7 @@ const styles = {
         flexDirection: 'column',
         justifyContent: 'flex-start', // Выравниваем контент по верху
         alignItems: 'center',
-        padding: isMobile ? '80px 3rem' : '80px 1.5rem', // Отступы сверху/снизу и по бокам для всего блока
+        padding: isMobile ? '80px 1.5rem' : '80px 3rem', // Отступы сверху/снизу и по бокам для всего блока
         gap: '1.5rem', // Расстояние между заголовками и сеткой фич
     }),
     sectionHeader: {
