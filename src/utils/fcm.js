@@ -6,6 +6,7 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 export const requestFcmToken = async () => {
   try {
     const permission = await Notification.requestPermission();
+    console.log(permission)
 
     if (permission !== 'granted') {
       console.warn('Разрешение на уведомления не получено');

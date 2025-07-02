@@ -1,6 +1,7 @@
-import { getMessaging } from "firebase/messaging";
+import { initializeApp } from "firebase/app";
+import { getMessaging } from "firebase/messaging/sw";
 
-firebase.initializeApp({
+const firebaseApp = initializeApp({
     apiKey: "AIzaSyBOpdvHgqkIG7zCehwu8QxyeO2ojCt_xUw",
     authDomain: "synask-web.firebaseapp.com",
     projectId: "synask-web",
@@ -10,7 +11,7 @@ firebase.initializeApp({
     measurementId: "G-T5F7JZ1L6W"
 });
 
-const messaging = getMessaging();
+const messaging = getMessaging(firebaseApp);
 
 messaging.onBackgroundMessage(function (payload) {
   const { title, body } = payload.notification;
