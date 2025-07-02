@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'firebase-messaging-sw.js', // ⚠️ именно это имя
       registerType: 'autoUpdate',
       includeAssets: [
         'all-config-icons/apple-icon-180x180.png',
@@ -15,7 +18,7 @@ export default defineConfig({
       manifest: {
         name: 'sYnask — Инновационная соцсеть',
         short_name: 'sYnask',
-        description: 'Инновационная социальная сеть для авторов под управлением ИИ',
+        description: 'Социальная сеть для авторов',
         start_url: '/',
         display: 'standalone',
         background_color: '#000000',
