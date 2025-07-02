@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging/sw";
+import { initializeApp } from 'firebase/app';
+import { getMessaging } from 'firebase/messaging/sw';
 
 const firebaseApp = initializeApp({
     apiKey: "AIzaSyBOpdvHgqkIG7zCehwu8QxyeO2ojCt_xUw",
