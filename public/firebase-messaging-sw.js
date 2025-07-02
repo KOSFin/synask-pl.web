@@ -1,4 +1,4 @@
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging } from "firebase/messaging/sw";
 
 firebase.initializeApp({
     apiKey: "AIzaSyBOpdvHgqkIG7zCehwu8QxyeO2ojCt_xUw",

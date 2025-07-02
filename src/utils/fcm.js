@@ -1,4 +1,4 @@
-import { getMessaging, getToken } from "firebase/messaging";
+import { getToken } from "firebase/messaging";
 import { messaging } from "./firebaseUtils";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
