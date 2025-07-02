@@ -2,23 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { VitePWA } from 'vite-plugin-pwa'
 
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+import { VitePWA } from 'vite-plugin-pwa'
+
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      registerType: 'autoUpdate',
       strategies: 'injectManifest',
       srcDir: 'src',
-      filename: 'firebase-messaging-sw.js', // ⚠️ именно это имя
-      registerType: 'autoUpdate',
-      includeAssets: [
-        'all-config-icons/apple-icon-180x180.png',
-        'all-config-icons/favicon-32x32.png',
-        'all-config-icons/favicon-16x16.png'
-      ],
+      filename: 'firebase-messaging-sw.js',
       manifest: {
         name: 'sYnask — Инновационная соцсеть',
         short_name: 'sYnask',
-        description: 'Социальная сеть для авторов',
+        description: 'Инновационная социальная сеть для авторов под управлением ИИ',
         start_url: '/',
         display: 'standalone',
         background_color: '#000000',
