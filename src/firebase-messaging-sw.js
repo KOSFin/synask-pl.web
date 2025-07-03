@@ -18,13 +18,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-onBackgroundMessage(messaging, (payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+onBackgroundMessage(messaging, payload => {
+  if (payload?.notification) {
+    console.log('[firebase-messaging-sw.js] Авто-показ уведомления:', payload.notification.title);
+    return;
+  }
 
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  const { title, ...rest } = payload.data;
+  self.registration.showNotification(title, rest);
 });

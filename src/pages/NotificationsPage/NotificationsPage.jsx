@@ -1,88 +1,71 @@
-// NotificationsPage.jsx
-import React, { useState } from 'react';
-import { requestFcmToken } from '../../utils/fcm'; // импортируй свою функцию получения токена
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    padding: '20px',
-    backgroundColor: '#0e0e0e',
-    color: '#fff',
-    fontFamily: 'sans-serif',
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-  },
-  description: {
-    fontSize: '16px',
-    maxWidth: '400px',
-    opacity: 0.8,
-  },
-  button: {
-    marginTop: '20px',
-    padding: '10px 24px',
-    fontSize: '16px',
-    backgroundColor: '#4caf50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-  },
-  buttonHover: {
-    backgroundColor: '#45a049',
-  },
-  success: {
-    color: '#4caf50',
-    fontWeight: 'bold',
-  },
-};
+import React, { useEffect, useState } from 'react';
+import { refreshFcmToken, getSavedFcmToken } from '../../utils/fcm';
 
 const NotificationsPage = () => {
-  const [status, setStatus] = useState(null);
-  const [hover, setHover] = useState(false);
+  const [token, setToken] = useState(null);
+  const [status, setStatus] = useState(Notification.permission);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (Notification.permission === 'granted') {
+      refreshFcmToken().then((t) => {
+        if (t) {
+          setToken(t);
+          setStatus('granted');
+        }
+      });
+    }
+  }, []);
 
   const handleEnableNotifications = async () => {
-    const token = await requestFcmToken();
-    if (token) {
-      setStatus('success');
+    const newToken = await refreshFcmToken();
+    if (newToken) {
+      setToken(newToken);
+      setStatus('granted');
     } else {
       setStatus('denied');
     }
   };
 
+  const handleCopy = async () => {
+    if (!token) return;
+    try {
+      await navigator.clipboard.writeText(token);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      alert('Не удалось скопировать токен');
+    }
+  };
+
   return (
-    <div style={styles.container}>
-      <div style={styles.title}>Разрешите уведомления</div>
-      <div style={styles.description}>
-        Чтобы получать уведомления о новых сообщениях, подписках и других событиях — включите уведомления.
-      </div>
-
-      {status === 'success' ? (
-        <div style={styles.success}>Уведомления включены ✅</div>
+    <div style={{
+      padding: 20,
+      textAlign: 'center',
+      color: '#fff',
+      background: '#0e0e0e',
+      minHeight: '100vh'
+    }}>
+      <h2>Уведомления</h2>
+      {status === 'granted' && token ? (
+        <>
+          <p style={{ wordBreak: 'break-word', fontSize: 14 }}>
+            <b>Ваш FCM токен:</b><br />{token}
+          </p>
+          <button onClick={handleCopy} style={{ marginTop: 10, padding: '10px 20px' }}>
+            {copied ? 'Скопировано ✅' : 'Скопировать токен'}
+          </button>
+        </>
       ) : (
-        <button
-          style={{
-            ...styles.button,
-            ...(hover ? styles.buttonHover : {}),
-          }}
-          onClick={handleEnableNotifications}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-        >
-          Включить уведомления
-        </button>
-      )}
-
-      {status === 'denied' && (
-        <div style={{ color: '#f44336' }}>Вы запретили уведомления. Измените настройки браузера, чтобы включить их снова.</div>
+        <>
+          <p>Разрешите уведомления, чтобы получать сообщения и новости.</p>
+          <button onClick={handleEnableNotifications} style={{ padding: '10px 20px' }}>
+            Включить уведомления
+          </button>
+          {status === 'denied' && (
+            <p style={{ color: 'red' }}>Вы запретили уведомления. Измените настройки браузера, чтобы включить их снова.</p>
+          )}
+        </>
       )}
     </div>
   );

@@ -1,45 +1,38 @@
-// utils/fcm.js
-
-import { getToken } from "firebase/messaging";
-import { messaging } from "./firebaseUtils"; // Убедись, что путь верный
+import { getToken, deleteToken } from "firebase/messaging";
+import { messaging } from "./firebaseUtils";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+const TOKEN_KEY = 'fcm_token';
 
-export const requestFcmToken = async () => {
+export async function refreshFcmToken() {
   try {
-    const permission = await Notification.requestPermission();
-    console.log('Notification permission:', permission);
-
-    if (permission !== 'granted') {
-      console.warn('Разрешение на уведомления не получено');
-      return null;
-    }
-
-    // 🕵️‍♂️ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ:
-    // Получаем уже существующую регистрацию сервис-воркера, созданную VitePWA.
-    // navigator.serviceWorker.ready гарантирует, что воркер активен.
     const swRegistration = await navigator.serviceWorker.ready;
-
-    // Передаём эту регистрацию в getToken, чтобы он не создавал новую.
-    const token = await getToken(messaging, {
+    const newToken = await getToken(messaging, {
       vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: swRegistration, // 👈 Вот оно
+      serviceWorkerRegistration: swRegistration
     });
-
-    if (token) {
-      console.log('FCM Token received:', token);
-      localStorage.setItem('fcm_token', token);
-      return token;
-    } else {
-      console.warn('Не удалось получить токен. Убедитесь, что сервис-воркер зарегистрирован правильно.');
-      return null;
+    const saved = localStorage.getItem(TOKEN_KEY);
+    if (newToken && newToken !== saved) {
+      localStorage.setItem(TOKEN_KEY, newToken);
+      console.log("🔄 FCM token updated:", newToken);
     }
-  } catch (error) {
-    console.error('Ошибка получения FCM токена:', error);
+    return newToken;
+  } catch (e) {
+    console.error("FCM getToken error:", e);
     return null;
   }
-};
+}
 
-export const getSavedFcmToken = () => {
-  return localStorage.getItem('fcm_token') || null;
-};
+export async function clearFcmToken() {
+  try {
+    await deleteToken(messaging);
+    localStorage.removeItem(TOKEN_KEY);
+    console.log("🗑 FCM token deleted");
+  } catch (e) {
+    console.error("FCM deleteToken error:", e);
+  }
+}
+
+export function getSavedFcmToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
