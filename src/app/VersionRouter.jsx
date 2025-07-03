@@ -10,9 +10,11 @@ const VersionRouter = () => {
     const navigate = useNavigate();
     const currentPath = `${location.pathname}${location.search}`;
     const { device } = useDevice();
+    console.log('start')
   
     useEffect(() => {
       var UrlPath = '/';
+      console.log('start 2')
   
       // Determine version based on screen size
       const newVersion = `/${device}`;
@@ -33,7 +35,7 @@ const VersionRouter = () => {
   
     }, [location.pathname, navigate]);
   
-    if (version === null) return null; // or a loading spinner if needed
+    if (version === null) return null;
   
     return (
         <MainRoutes></MainRoutes>

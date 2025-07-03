@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../app/supabaseClient';
+import { supabase } from '../../utils/supabaseUtils';
 import styles from './LoginPage.styles';
 
 import { useDevice } from '../../providers/useDevice';
